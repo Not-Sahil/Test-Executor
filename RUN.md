@@ -12,12 +12,6 @@ pip install -r requirements.txt
 python -m playwright install chromium
 ```
 
-For development/test dependencies:
-
-```powershell
-pip install -r requirements-dev.txt
-```
-
 ### Linux/Kali
 
 ```bash
@@ -96,8 +90,6 @@ Do not commit:
 python -m compileall -q .
 python -m pytest -q
 ```
-
-If the local environment is missing a development dependency, install `requirements-dev.txt` before treating the test result as meaningful.
 
 ## 8. Result interpretation
 

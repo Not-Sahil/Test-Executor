@@ -22,7 +22,7 @@ This package is based on the uploaded Streamlit Test Executor source tree. It re
 - `python -m compileall -q app.py pre_login login_page authentication core payloads scripts`: passed.
 - `python -m pytest -q --ignore=tests/units/test_tc14_sql_injection.py`: **127 passed**.
 - SQLi payload-loader smoke test against a local loopback HTTP fixture: loaded 5 externalized probes and completed with `SAFE` for the benign fixture.
-- The SQLi test module itself was not run here because the `responses` test dependency was not installed in this build environment. It is included in `requirements-dev.txt`; install development requirements and run `python -m pytest -q` on the developer machine to execute that module as well.
+- The SQLi test module itself was not run here because the `responses` test dependency was not installed in this build environment. Run `python -m pytest -q` after installing `requirements.txt` on the developer machine to execute that module as well.
 - Streamlit UI was syntax/compile checked but not launched in this build environment because Streamlit was not installed here. It is declared in `requirements.txt` and will be installed by the documented setup.
 - Upstream source downloads were not executed here because network access is unavailable in the build environment. The curated project payloads work without downloads; optional refresh is available through `python scripts/fetch_payload_sources.py`.
 
