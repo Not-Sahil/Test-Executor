@@ -1,0 +1,17 @@
+# Low-impact malformed/nonexistent resource probes used to observe error handling.
+# These are project-curated sentinels, not a verbatim FuzzDB payload file.
+/this-path-definitely-does-not-exist-8f71c9
+/invalid%2Fpath%2Fsegment
+/%ZZ
+/error-test//missing
+/error-test/missing;invalid
+/error-test/%2e/missing
+/error-test/%5C/missing
+/error-test/missing%20
+/nonexistent-resource-8f71c9.json
+/nonexistent/deep/path/8f71c9
+/nonexistent-endpoint-8f71c9.php
+/nonexistent-endpoint-8f71c9.jsp
+/nonexistent-endpoint-8f71c9.aspx
+/nonexistent-endpoint-8f71c9.do
+/nonexistent-endpoint-8f71c9.action

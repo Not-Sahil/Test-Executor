@@ -1,0 +1,99 @@
+{
+  "schema_version": 2,
+  "default_policy": {
+    "max_loaded_items": 100,
+    "deduplicate": true,
+    "ignore_comments": true,
+    "active_testing_requires_authorization": true,
+    "dangerous_payloads_enabled": false,
+    "deterministic_upstream_sampling": true,
+    "max_http_body_bytes": 250000,
+    "public_targets_only_by_default": true
+  },
+  "testcases": {
+    "tc03_helpful_error_message": {
+      "label": "Helpful Error Message",
+      "files": [
+        "fuzzdb/response_patterns/error_path_probes.txt"
+      ],
+      "purpose": "Nonexistent/malformed resource probes for response-error disclosure",
+      "max_items": 10,
+      "execution": "bounded_get_only",
+      "optional_upstream_files": [
+        "upstream/FuzzDB/regex/errors.txt"
+      ]
+    },
+    "tc10_directory_listing": {
+      "label": "Directory Listing",
+      "files": [
+        "seclists/discovery/directory_candidates.txt",
+        "fuzzdb/discovery/predictable_filepaths_curated.txt"
+      ],
+      "purpose": "Bounded directory discovery paths",
+      "max_items": 120,
+      "execution": "bounded_get_only",
+      "optional_upstream_files": [
+        "upstream/SecLists/Discovery/Web-Content/raft-small-directories.txt",
+        "upstream/SecLists/Discovery/Web-Content/api/api-endpoints.txt",
+        "upstream/SecLists/Discovery/Web-Content/common.txt",
+        "upstream/FuzzDB/discovery/predictable-filepaths/KitchensinkDirectories.txt"
+      ]
+    },
+    "tc13_sensitive_file_exposure": {
+      "label": "Sensitive File Exposure",
+      "files": [
+        "seclists/discovery/sensitive_file_candidates.txt",
+        "fuzzdb/discovery/predictable_filepaths_curated.txt",
+        "seclists/discovery/source_config_bases.txt",
+        "seclists/discovery/backup_suffixes.txt"
+      ],
+      "purpose": "Bounded probes for publicly exposed configuration, backup, and metadata files",
+      "max_items": 100,
+      "execution": "bounded_get_only",
+      "optional_upstream_files": [
+        "upstream/SecLists/Discovery/Web-Content/common.txt",
+        "upstream/SecLists/Discovery/Web-Content/raft-small-files.txt",
+        "upstream/FuzzDB/discovery/predictable-filepaths/Randomfiles.txt"
+      ]
+    },
+    "tc23_internal_path_disclosure": {
+      "label": "Internal Path Disclosure",
+      "files": [
+        "fuzzdb/response_patterns/error_path_probes.txt"
+      ],
+      "purpose": "Controlled malformed/nonexistent resource paths to inspect errors for filesystem path or stack-trace disclosure",
+      "max_items": 16,
+      "execution": "bounded_get_only",
+      "optional_upstream_files": [
+        "upstream/FuzzDB/regex/errors.txt"
+      ]
+    },
+    "tc13_cors": {
+      "label": "CORS",
+      "files": [
+        "payloads_all_the_things/cors/origin_probe_templates.txt"
+      ],
+      "purpose": "Reserved origin sentinels and null-origin coverage based on PAT CORS methodology",
+      "max_items": 4,
+      "execution": "header_only_no_data_exfiltration"
+    },
+    "tc14_sql_injection": {
+      "label": "SQL Injection",
+      "files": [
+        "payloads_all_the_things/sql_injection/safe_differential_probes.json"
+      ],
+      "purpose": "Bounded syntax and boolean differential probes based on PAT SQL entry-point guidance",
+      "max_items": 8,
+      "execution": "no_auth_bypass_no_data_extraction_no_writes_no_time_delays"
+    },
+    "tc15_ldap_ad": {
+      "label": "LDAP / Active Directory Injection",
+      "files": [
+        "payloads_all_the_things/ldap_injection/safe_syntax_markers.txt"
+      ],
+      "purpose": "Synthetic LDAP metacharacter markers; deliberately excludes known authentication-bypass predicates",
+      "max_items": 5,
+      "execution": "bounded_login_form_probe_no_credential_spraying"
+    }
+  }
+}

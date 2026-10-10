@@ -1,0 +1,7 @@
+# Bounded syntax markers using LDAP metacharacters discussed in PayloadsAllTheThings LDAP Injection.
+# Intentionally excludes authentication-bypass predicates, user enumeration, and directory-query loops.
+TC15_LDAP_TEST_{{nonce}}
+TC15*LDAP*TEST*{{nonce}}
+TC15(LDAP)TEST{{nonce}}
+TC15\\LDAP\\TEST{{nonce}}
+TC15,LDAP,TEST{{nonce}}

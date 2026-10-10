@@ -1,0 +1,6 @@
+# Adapted from the PAT CORS guidance (Origin reflection and null-origin checks).
+# Reserved .invalid domains avoid targeting third-party sites; templates are harmless headers only.
+https://{marker}.invalid
+https://{hostname}.invalid
+http://{marker}.invalid
+null

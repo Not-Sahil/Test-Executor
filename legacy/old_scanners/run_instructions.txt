@@ -1,0 +1,177 @@
+TEST EXECUTOR — HOW TO RUN
+==========================
+
+2. FIRST-TIME SETUP (Windows PowerShell)
+----------------------------------------
+cd to this project folder, then:
+
+    python -m venv venv
+    .\venv\Scripts\Activate.ps1
+    pip install -r requirements.txt
+    playwright install chromium
+
+If PowerShell blocks venv activation, run this once for your user account,
+then try Activate.ps1 again:
+
+    Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+
+Linux / macOS:
+
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+    playwright install chromium
+
+playwright install chromium is required for the "Solve CAPTCHA" button.
+The first four tests and automated login checks still work without it.
+
+
+3. START THE PROGRAM
+--------------------
+With the venv active, from this project folder:
+
+    streamlit run app.py
+
+The terminal prints a local URL, usually:
+
+    http://localhost:8501
+
+Open that URL in your browser. Leave the terminal window open while you work.
+
+If you change Python files, stop Streamlit (Ctrl+C in the terminal) and
+run "streamlit run app.py" again. A browser refresh does not reload the
+Python scanners.
+
+
+4. WHAT TO ENTER ON THE PAGE
+----------------------------
+
+Section 1 — Target
+~~~~~~~~~~~~~~~~~~
+There are two boxes.
+
+Box: "Target URL"
+  What: The website you are authorized to assess (scheme + host).
+  Examples:
+    https://example.com
+    http://example.com
+  Notes:
+    - Include http:// or https://. If you omit it, https:// is added.
+    - This URL is used by Banner, Security Headers, IP Access, and
+      Host Header Injection.
+    - Use the same scheme your browser uses for that site (some lab
+      sites have an expired HTTPS certificate; in that case enter http://
+      if that is how you are authorized to reach them).
+
+Box: "Login page URL or path"
+  Default value: /login
+  What: Where the HTML login form lives. Used only by Default Credentials
+  and User Enumeration.
+  You can enter either:
+    - A path on the same host, for example:
+        /login
+        /login.php
+        /login.jsp
+        /account/signin
+    - Or a full URL, for example:
+        https://example.com/login.php
+  Notes:
+    - Enter the page that shows username + password fields, not a
+      Microsoft / Okta / Google hosted SSO URL.
+    - If that page is federated SSO (redirects to an identity provider),
+      the last two tests are skipped automatically as not applicable.
+    - If you are not testing login at all, you can leave /login. Those
+      two tests will then report incomplete/skip if no form is found;
+      the first four tests still run.
+
+Section 2 — Authentication Database
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+There is nothing to type here.
+
+The app loads credentials.json next to app.py automatically. You should
+see counts for "Credential Pairs" and "Unique Usernames". Passwords are
+not shown on screen.
+
+To change what is tried, edit credentials.json (list of objects with
+"username" and "password") and restart Streamlit.
+
+
+Section 3 — Run Assessment
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+Click:  "Start Six Security Tests"
+
+You do not enter usernames or passwords in the UI. They come from
+credentials.json.
+
+What happens next:
+
+  A) No CAPTCHA, local login form
+     All six tests run. Wait until the combined report appears.
+
+  B) Federated SSO / identity-provider login
+     Tests 1–4 run. Default Credentials and User Enumeration show SKIPPED
+     (not applicable). No extra input.
+
+  C) CAPTCHA on a local login form
+     Tests 1–4 finish, then the page pauses. You will see the next
+     username (password hidden) and these buttons:
+
+       1. Solve CAPTCHA for this item
+          A Chromium window opens. The tool fills the username (and
+          password for Default Credentials). Complete the CAPTCHA
+          yourself in that window. Do not close it until the check
+          continues. Wait up to about 3 minutes. After submit, the UI
+          asks again for the next pair or username.
+
+       2. Skip this pair  (or Skip this username)
+          Drops only the current item and continues.
+
+       3. Skip the rest pairs  (or Skip the rest usernames)
+          Appears only after the first item has been tested (Solve).
+          Keeps the result of the tested item(s). Marks UNSAFE if any
+          tested pair logged in, otherwise SAFE. Does not try the
+          remaining list.
+
+       4. Skip Default Credentials  (or Skip User Enumeration)
+          Stops that whole check. Recorded as not applicable / incomplete,
+          never as a silent SAFE pass.
+
+     After Default Credentials, the same choices appear for
+     User Enumeration if that list is still pending.
+
+Do not type secrets into extra boxes — there are none. Only Target URL,
+Login page, and the Start / CAPTCHA buttons.
+
+
+5. AFTER IT FINISHES
+--------------------
+The page shows:
+
+  - Overall status (SAFE / UNSAFE / REVIEW REQUIRED / INCOMPLETE)
+  - One card per test
+  - A summary table
+  - Expandable evidence
+
+Files are also written to:
+
+  output/<hostname_from_your_url>_<date_time>/
+
+Open compiled.html in a browser, or compiled.json for the raw payload.
+
+Start again anytime by changing the two input boxes and clicking
+"Start Six Security Tests".
+
+
+6. COMMON PROBLEMS
+------------------
+- "Enter a target URL" — the first box was empty.
+- Authentication database error — credentials.json missing or not a JSON list.
+- Playwright / browser window does not open — run:
+      pip install -r requirements.txt
+      playwright install chromium
+  then restart Streamlit. You can still Skip the CAPTCHA test.
+- curl errors on the first four tests — install curl or use a machine
+  where curl.exe is on PATH.
+- Old results after a code change — stop and restart Streamlit.
+- HTTPS certificate errors on login tests — try the http:// URL if that
+  is the authorized way to reach the lab site.

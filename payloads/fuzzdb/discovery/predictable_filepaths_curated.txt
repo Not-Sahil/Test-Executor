@@ -1,0 +1,22 @@
+# Curated fallback entries based on FuzzDB discovery/predictable-filepaths categories.
+# Not a complete verbatim upstream FuzzDB wordlist.
+/.git/HEAD
+/.git/config
+/.svn/entries
+/.hg/hgrc
+/.env
+/.htaccess
+/.htpasswd
+/WEB-INF/web.xml
+/META-INF/MANIFEST.MF
+/server-status
+/phpinfo.php
+/backup/
+/backups/
+/admin/
+/adminer.php
+/phpmyadmin/
+/manager/html
+/logs/
+/access.log
+/error.log

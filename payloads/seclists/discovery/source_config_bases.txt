@@ -1,0 +1,9 @@
+/config.php
+/config.yml
+/config.yaml
+/config.json
+/application.properties
+/application.yml
+/application.yaml
+/web.config
+/index.php

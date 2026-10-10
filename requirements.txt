@@ -1,0 +1,12 @@
+streamlit>=1.40,<2.0
+requests>=2.31
+numpy==1.26.4
+pandas==2.2.3
+# Visible Chromium window used when a login CAPTCHA needs a human solve.
+playwright>=1.40
+
+# CVSS v4.0 Base scoring using the open-source cvss package.
+cvss>=3.6
+beautifulsoup4>=4.12
+
+defusedxml>=0.7.1

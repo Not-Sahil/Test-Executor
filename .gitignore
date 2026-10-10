@@ -1,0 +1,17 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.streamlit/secrets.toml
+.env
+.env.*
+authentication/credentials.json
+**/credentials.json
+output/
+reports/
+*.log
+.DS_Store
+Thumbs.db
+payloads/upstream/
+payloads/upstream_sources_manifest.json

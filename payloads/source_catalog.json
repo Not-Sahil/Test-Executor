@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "policy": {
+    "description": "Production-safe source catalog. Only sources mapped to a testcase may become active inputs; destructive credentials, shells, exploit kits, time-delay probes and data-exfiltration payloads are excluded.",
+    "full_repository_clone": false,
+    "runtime_network_fetch": false,
+    "selection": "deterministic bounded sampling from locally cached sources"
+  },
+  "sources": [
+    {
+      "id": "seclists_web_dirs",
+      "repository": "SecLists",
+      "url": "https://github.com/danielmiessler/SecLists",
+      "path": "Discovery/Web-Content/raft-small-directories.txt",
+      "local": "upstream/SecLists/Discovery/Web-Content/raft-small-directories.txt",
+      "testcases": [
+        "tc10_directory_listing"
+      ]
+    },
+    {
+      "id": "seclists_web_files",
+      "repository": "SecLists",
+      "url": "https://github.com/danielmiessler/SecLists",
+      "path": "Discovery/Web-Content/raft-small-files.txt",
+      "local": "upstream/SecLists/Discovery/Web-Content/raft-small-files.txt",
+      "testcases": [
+        "tc13_sensitive_file_exposure"
+      ]
+    },
+    {
+      "id": "seclists_common",
+      "repository": "SecLists",
+      "url": "https://github.com/danielmiessler/SecLists",
+      "path": "Discovery/Web-Content/common.txt",
+      "local": "upstream/SecLists/Discovery/Web-Content/common.txt",
+      "testcases": [
+        "tc10_directory_listing",
+        "tc13_sensitive_file_exposure"
+      ]
+    },
+    {
+      "id": "seclists_api_endpoints",
+      "repository": "SecLists",
+      "url": "https://github.com/danielmiessler/SecLists",
+      "path": "Discovery/Web-Content/api/api-endpoints.txt",
+      "local": "upstream/SecLists/Discovery/Web-Content/api/api-endpoints.txt",
+      "testcases": [
+        "tc10_directory_listing"
+      ]
+    },
+    {
+      "id": "seclists_sqli_quick",
+      "repository": "SecLists",
+      "url": "https://github.com/danielmiessler/SecLists",
+      "path": "Fuzzing/Databases/SQLi/quick-SQLi.txt",
+      "local": "upstream/SecLists/Fuzzing/Databases/SQLi/quick-SQLi.txt",
+      "testcases": [
+        "tc14_sql_injection"
+      ],
+      "execution": "filtered_safe_subset_only"
+    },
+    {
+      "id": "seclists_parameter_names",
+      "repository": "SecLists",
+      "url": "https://github.com/danielmiessler/SecLists",
+      "path": "Discovery/Web-Content/burp-parameter-names.txt",
+      "local": "upstream/SecLists/Discovery/Web-Content/burp-parameter-names.txt",
+      "testcases": [
+        "tc14_sql_injection"
+      ],
+      "execution": "discovery_only"
+    },
+    {
+      "id": "fuzzdb_directories",
+      "repository": "FuzzDB",
+      "url": "https://github.com/fuzzdb-project/fuzzdb",
+      "path": "discovery/predictable-filepaths/KitchensinkDirectories.txt",
+      "local": "upstream/FuzzDB/discovery/predictable-filepaths/KitchensinkDirectories.txt",
+      "testcases": [
+        "tc10_directory_listing"
+      ]
+    },
+    {
+      "id": "fuzzdb_random_files",
+      "repository": "FuzzDB",
+      "url": "https://github.com/fuzzdb-project/fuzzdb",
+      "path": "discovery/predictable-filepaths/Randomfiles.txt",
+      "local": "upstream/FuzzDB/discovery/predictable-filepaths/Randomfiles.txt",
+      "testcases": [
+        "tc13_sensitive_file_exposure"
+      ]
+    },
+    {
+      "id": "fuzzdb_sql_errors",
+      "repository": "FuzzDB",
+      "url": "https://github.com/fuzzdb-project/fuzzdb/blob/master/regex/errors.txt",
+      "path": "regex/errors.txt",
+      "local": "upstream/FuzzDB/regex/errors.txt",
+      "testcases": [
+        "tc03_helpful_error_message",
+        "tc23_internal_path_disclosure"
+      ],
+      "execution": "response_patterns_only",
+      "provenance": "vendored from the current FuzzDB regex/errors.txt source supplied for this build; SHA-256 recorded in upstream_sources_manifest.json"
+    },
+    {
+      "id": "pat_sqli",
+      "repository": "PayloadsAllTheThings",
+      "url": "https://github.com/swisskyrepo/PayloadsAllTheThings",
+      "path": "SQL Injection/README.md",
+      "local": "upstream/PayloadsAllTheThings/SQL Injection/README.md",
+      "testcases": [
+        "tc14_sql_injection"
+      ],
+      "execution": "reference_and_review_only"
+    },
+    {
+      "id": "pat_ldap",
+      "repository": "PayloadsAllTheThings",
+      "url": "https://github.com/swisskyrepo/PayloadsAllTheThings",
+      "path": "LDAP Injection/README.md",
+      "local": "upstream/PayloadsAllTheThings/LDAP Injection/README.md",
+      "testcases": [
+        "tc15_ldap_ad"
+      ],
+      "execution": "reference_only"
+    },
+    {
+      "id": "pat_cors",
+      "repository": "PayloadsAllTheThings",
+      "url": "https://github.com/swisskyrepo/PayloadsAllTheThings",
+      "path": "CORS Misconfiguration/README.md",
+      "local": "upstream/PayloadsAllTheThings/CORS Misconfiguration/README.md",
+      "testcases": [
+        "tc13_cors"
+      ],
+      "execution": "reference_only"
+    }
+  ]
+}

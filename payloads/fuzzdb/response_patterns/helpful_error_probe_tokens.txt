@@ -1,0 +1,6 @@
+# Project-curated harmless sentinel suffixes for helpful-error tests.
+# These are not copied verbatim from FuzzDB; FuzzDB response regexes are used separately.
+__security_error_probe_404_9f31c7.html
+%ZZ
+__invalid_resource__.unknown
+__invalid_error_probe__
