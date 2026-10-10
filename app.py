@@ -7,6 +7,19 @@ _BROWSER_DIR = Path(__file__).resolve().parent / ".playwright-browsers"
 if _BROWSER_DIR.exists():
     os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", str(_BROWSER_DIR))
 
+# Load .env file if present and default ALLOW_PRIVATE_TARGETS to "1"
+_ENV_FILE = Path(__file__).resolve().parent / ".env"
+if _ENV_FILE.is_file():
+    try:
+        for _line in _ENV_FILE.read_text(encoding="utf-8").splitlines():
+            _line = _line.strip()
+            if _line and not _line.startswith("#") and "=" in _line:
+                _k, _v = _line.split("=", 1)
+                os.environ.setdefault(_k.strip(), _v.strip().strip("'\""))
+    except Exception:
+        pass
+os.environ.setdefault("ALLOW_PRIVATE_TARGETS", "1")
+
 import streamlit as st
 
 from core.assessment_orchestrator import (
@@ -56,6 +69,11 @@ ENUMERATION_PROBE_PASSWORD = "__wrong_password_idnt04__"
 # TLS policy for authorized assessments. Keep enabled for normal production use.
 # Disable only when the target intentionally uses an expired/self-signed certificate.
 VERIFY_TLS = True
+
+# Target policy for assessments. By default, allow private/local targets for lab/local testing.
+ALLOW_PRIVATE_TARGETS = (
+    os.getenv("ALLOW_PRIVATE_TARGETS", "1").lower() in {"1", "true", "yes", "on"}
+)
 
 
 # ==============================================================
@@ -1666,6 +1684,20 @@ if not verify_tls:
         "The report should record this test condition."
     )
 
+allow_private_targets = st.checkbox(
+    "Allow private / local network targets",
+    value=ALLOW_PRIVATE_TARGETS,
+    help=(
+        "Allow testing private, loopback, and local network addresses (e.g. localhost, 127.0.0.1, 192.168.x.x) "
+        "during authorized assessments. Defaults to enabled."
+    ),
+)
+
+if not allow_private_targets:
+    st.info(
+        "Private and loopback target addresses are blocked. Only public targets are permitted."
+    )
+
 
 # ==============================================================
 # AUTHORIZED CREDENTIAL INPUTS
@@ -1744,7 +1776,11 @@ if st.button(
 
     target_url = target.strip()
     try:
-        target_url = validate_target_url(target_url, TargetPolicy.from_environment())
+        policy = TargetPolicy(
+            allow_private_targets=bool(allow_private_targets),
+            allow_non_default_ports=True,
+        )
+        target_url = validate_target_url(target_url, policy)
     except ValueError as exc:
         st.error(f"Target validation failed: {exc}")
         st.stop()
@@ -1762,6 +1798,7 @@ if st.button(
                 st.stop()
 
     st.session_state.verify_tls = bool(verify_tls)
+    st.session_state.allow_private_targets = bool(allow_private_targets)
     st.session_state.known_valid_username = None
 
     progress_box = st.empty()

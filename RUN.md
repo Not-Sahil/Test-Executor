@@ -48,21 +48,23 @@ After a refresh, review the generated manifest and run the test suite before usi
 
 ## 3. Network safety policy
 
-Public targets are the default. The application rejects target URLs that contain embedded credentials and rejects targets resolving to private/loopback/link-local/multicast/reserved/unspecified addresses.
+Private and local lab targets (such as loopback, `127.0.0.1`, and private network IP ranges) are allowed by default for local development and authorized assessments. This is configured via `.env` (`ALLOW_PRIVATE_TARGETS=1`) and can also be toggled directly in the Streamlit UI ("Allow private / local network targets").
 
-For an explicitly authorized internal/lab assessment only:
+Embedded URL credentials and malformed destinations remain rejected.
+
+To enforce public-only targets in an internet-facing multi-tenant deployment, set:
 
 ```powershell
-$env:ALLOW_PRIVATE_TARGETS="1"
+$env:ALLOW_PRIVATE_TARGETS="0"
 ```
 
 or:
 
 ```bash
-export ALLOW_PRIVATE_TARGETS=1
+export ALLOW_PRIVATE_TARGETS=0
 ```
 
-Do not enable this in a public multi-tenant deployment unless internal target scanning is an explicit product requirement and the surrounding network controls are in place.
+or uncheck the "Allow private / local network targets" checkbox in the UI.
 
 ## 4. Authorization
 

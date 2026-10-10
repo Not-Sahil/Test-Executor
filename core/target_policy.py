@@ -5,16 +5,33 @@ import ipaddress
 import os
 import socket
 from dataclasses import dataclass
+from pathlib import Path
 from urllib.parse import urlparse
+
+
+def _load_env_file() -> None:
+    try:
+        env_file = Path(__file__).resolve().parent.parent / ".env"
+        if env_file.is_file():
+            for line in env_file.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip().strip("'\""))
+    except Exception:
+        pass
+
+
+_load_env_file()
 
 
 @dataclass(frozen=True)
 class TargetPolicy:
     """Safety policy applied before an assessment starts.
 
-    Public targets are the production default. Private/loopback/link-local
-    targets are allowed only when explicitly enabled for an authorized lab or
-    internal engagement with ALLOW_PRIVATE_TARGETS=1.
+    Private/loopback/link-local targets are allowed by default for local/lab testing
+    or authorized internal engagements (ALLOW_PRIVATE_TARGETS=1).
     """
 
     allow_private_targets: bool = False
@@ -24,7 +41,7 @@ class TargetPolicy:
     @classmethod
     def from_environment(cls) -> "TargetPolicy":
         return cls(
-            allow_private_targets=os.getenv("ALLOW_PRIVATE_TARGETS", "0").lower()
+            allow_private_targets=os.getenv("ALLOW_PRIVATE_TARGETS", "1").lower()
             in {"1", "true", "yes", "on"},
         )
 
@@ -90,8 +107,8 @@ def validate_target_url(target: str, policy: TargetPolicy | None = None) -> str:
         if forbidden:
             raise ValueError(
                 "Target resolves to a private, loopback, link-local, multicast, reserved, "
-                "or unspecified address. Set ALLOW_PRIVATE_TARGETS=1 only for an explicitly "
-                "authorized internal/lab assessment."
+                "or unspecified address. Enable 'Allow private / local network targets' or set "
+                "ALLOW_PRIVATE_TARGETS=1 for an authorized internal/lab assessment."
             )
 
     return raw.rstrip("/")

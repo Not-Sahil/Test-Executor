@@ -64,7 +64,7 @@ Install requirements to enable local numeric CVSS v4.0 calculation. Only confirm
 
 ## Production network policy
 
-Public targets are the default. The application validates the target before scanning and rejects embedded URL credentials and DNS/IP destinations that resolve to loopback, private, link-local, multicast, reserved or unspecified addresses. For an explicitly authorized internal/lab assessment, set `ALLOW_PRIVATE_TARGETS=1` before starting the application. Do not enable that setting for an internet-facing multi-tenant deployment unless your network policy requires it.
+The application validates the target before scanning and rejects embedded URL credentials and malformed destinations. For local development and authorized assessments, internal and loopback targets are permitted by default (`ALLOW_PRIVATE_TARGETS=1` in `.env` and via the "Allow private / local network targets" UI toggle). For a public multi-tenant deployment, internal scanning can be disabled by setting `ALLOW_PRIVATE_TARGETS=0` or unchecking the UI option.
 
 The UI requires the operator to explicitly confirm written authorization. Login paths are restricted to same-origin paths, and protected URLs are checked against the target origin.
 
