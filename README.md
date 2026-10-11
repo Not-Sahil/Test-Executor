@@ -85,3 +85,6 @@ A `SAFE` result means the configured check found no signal within its bounded sc
 When **Login Page Tests (17)** is selected, expand **Authorized test account — TC05, TC06, TC10 & TC17** and enter a dedicated test-account username and password. Check the authorization confirmation to allow the credentials to be passed to the authenticated testcase checks. The credentials are held in Streamlit session state for the current UI session and are not written to `authentication/credentials.json` or included intentionally in reports. Avoid shared/production accounts; use a client-approved test account.
 
 This UI account is separate from the credential candidates used by TC02 (Default Credentials) and TC04 (User Enumeration). If no UI account is supplied and confirmed, the suite continues with available checks and should report authentication-dependent checks as incomplete/not assessed where applicable. Providing credentials does not by itself prove they are valid; the scanner must establish a successful authentication control before making claims that depend on one.
+
+
+Testing for gihub update.....
