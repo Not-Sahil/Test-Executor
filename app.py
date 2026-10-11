@@ -1581,6 +1581,7 @@ def run_login_page_suite(
                     _login_url_from_target(target_url, login_path),
                     timeout=12.0,
                     use_browser=True,
+                    verify_tls=verify_tls,
                 )
 
             else:

@@ -316,16 +316,33 @@ def _same_origin(base: str, other: str) -> bool:
     )
 
 
-def _static_discovery(login_url: str, timeout: float = 12.0) -> tuple[str, list[FormRecord], list[str]]:
-    response = requests.get(
-        login_url,
-        timeout=timeout,
-        allow_redirects=True,
-        headers={
-            "User-Agent": "SecurityAssessmentScanner/1.0",
-            "Accept": "text/html,application/xhtml+xml",
-        },
-    )
+def _static_discovery(
+    login_url: str,
+    timeout: float = 12.0,
+    verify_tls: bool = True,
+) -> tuple[str, list[FormRecord], list[str]]:
+    try:
+        response = requests.get(
+            login_url,
+            timeout=timeout,
+            verify=verify_tls,
+            allow_redirects=True,
+            headers={
+                "User-Agent": "SecurityAssessmentScanner/1.0",
+                "Accept": "text/html,application/xhtml+xml",
+            },
+        )
+    except requests.exceptions.SSLError:
+        response = requests.get(
+            login_url,
+            timeout=timeout,
+            verify=False,
+            allow_redirects=True,
+            headers={
+                "User-Agent": "SecurityAssessmentScanner/1.0",
+                "Accept": "text/html,application/xhtml+xml",
+            },
+        )
     content_type = (response.headers.get("Content-Type") or "").lower()
     if "html" not in content_type and "xhtml" not in content_type:
         return (
@@ -351,7 +368,11 @@ def _static_discovery(login_url: str, timeout: float = 12.0) -> tuple[str, list[
     return "OK", forms, [f"Static HTTP response: {response.status_code} {response.url}"]
 
 
-def _browser_discovery(login_url: str, timeout: float = 12.0) -> tuple[list[FormRecord], list[str]]:
+def _browser_discovery(
+    login_url: str,
+    timeout: float = 12.0,
+    verify_tls: bool = True,
+) -> tuple[list[FormRecord], list[str]]:
     if sync_playwright is None:
         return [], ["Browser discovery unavailable: Playwright is not installed."]
 
@@ -369,7 +390,7 @@ def _browser_discovery(login_url: str, timeout: float = 12.0) -> tuple[list[Form
     with sync_playwright() as pw:
 
         browser = pw.chromium.launch(headless=True)
-        context = browser.new_context()
+        context = browser.new_context(ignore_https_errors=True)
         page = context.new_page()
         try:
             page.goto(login_url, wait_until="domcontentloaded", timeout=int(timeout * 1000))
@@ -643,19 +664,34 @@ def _classify(findings: list[dict[str, Any]], forms: list[FormRecord], browser_u
 
 
 
-def _candidate_login_urls(initial_url: str, timeout: float = 8.0, limit: int = 8) -> list[str]:
+def _candidate_login_urls(
+    initial_url: str,
+    timeout: float = 8.0,
+    limit: int = 8,
+    verify_tls: bool = True,
+) -> list[str]:
     """Find same-origin login endpoints when the configured /login path is wrong."""
     candidates: list[str] = [initial_url]
     parsed_initial = urlparse(initial_url)
     origin = f"{parsed_initial.scheme}://{parsed_initial.netloc}"
     root_url = origin + "/"
     try:
-        response = requests.get(
-            root_url,
-            timeout=timeout,
-            allow_redirects=True,
-            headers={"User-Agent": "SecurityAssessmentScanner/1.0", "Accept": "text/html"},
-        )
+        try:
+            response = requests.get(
+                root_url,
+                timeout=timeout,
+                verify=verify_tls,
+                allow_redirects=True,
+                headers={"User-Agent": "SecurityAssessmentScanner/1.0", "Accept": "text/html"},
+            )
+        except requests.exceptions.SSLError:
+            response = requests.get(
+                root_url,
+                timeout=timeout,
+                verify=False,
+                allow_redirects=True,
+                headers={"User-Agent": "SecurityAssessmentScanner/1.0", "Accept": "text/html"},
+            )
         final = urlparse(response.url)
         if final.netloc.lower() == parsed_initial.netloc.lower():
             candidates.append(response.url)
@@ -715,6 +751,7 @@ def scan_autocomplete(
     *,
     timeout: float = 12.0,
     use_browser: bool = True,
+    verify_tls: bool = True,
 ) -> dict[str, Any]:
     """Run TC01 against the specified login page."""
     try:
@@ -732,10 +769,14 @@ def scan_autocomplete(
     browser_forms: list[FormRecord] = []
 
     attempted_urls: list[str] = []
-    for candidate_url in _candidate_login_urls(target, timeout=min(timeout, 8.0)):
+    for candidate_url in _candidate_login_urls(target, timeout=min(timeout, 8.0), verify_tls=verify_tls):
         attempted_urls.append(candidate_url)
         try:
-            static_status, candidate_forms, static_evidence = _static_discovery(candidate_url, timeout=timeout)
+            static_status, candidate_forms, static_evidence = _static_discovery(
+                candidate_url,
+                timeout=timeout,
+                verify_tls=verify_tls,
+            )
             all_evidence.extend(static_evidence)
             if candidate_forms:
                 static_forms.extend(candidate_forms)
@@ -748,7 +789,11 @@ def scan_autocomplete(
         # but bounded by the candidate URL budget.
         if use_browser and not any(_candidate_login_form(f) for f in static_forms):
             try:
-                found, browser_evidence = _browser_discovery(candidate_url, timeout=timeout)
+                found, browser_evidence = _browser_discovery(
+                    candidate_url,
+                    timeout=timeout,
+                    verify_tls=verify_tls,
+                )
                 browser_forms.extend(found)
                 all_evidence.extend(browser_evidence)
             except Exception as exc:
