@@ -358,7 +358,16 @@ def _browser_discovery(login_url: str, timeout: float = 12.0) -> tuple[list[Form
     forms: list[FormRecord] = []
     evidence: list[str] = []
 
+    import sys
+    if sys.platform == "win32":
+        try:
+            import asyncio
+            asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+        except Exception:
+            pass
+
     with sync_playwright() as pw:
+
         browser = pw.chromium.launch(headless=True)
         context = browser.new_context()
         page = context.new_page()
@@ -627,10 +636,11 @@ def _classify(findings: list[dict[str, Any]], forms: list[FormRecord], browser_u
         )
 
     return (
-        STATUS_INCOMPLETE,
+        STATUS_NOT_APPLICABLE,
         "No usable login form was discovered, including the browser-rendered DOM.",
         evidence,
     )
+
 
 
 def _candidate_login_urls(initial_url: str, timeout: float = 8.0, limit: int = 8) -> list[str]:
@@ -748,21 +758,30 @@ def scan_autocomplete(
 
     forms = _merge_forms(static_forms, browser_forms)
     login_forms = [f for f in forms if _candidate_login_form(f)]
-    if not login_forms and forms:
-        # If only non-login forms exist, do not silently call them safe.
-        contexts = sorted({f.context for f in forms})
+    if not login_forms:
+        contexts = sorted({f.context for f in forms}) if forms else []
+        summary = (
+            "No local sign-in form was identified; discovered forms appear to be registration, reset/change-password, or otherwise ambiguous."
+            if forms
+            else "No usable login form was discovered, including the browser-rendered DOM."
+        )
         return {
             "status": STATUS_NOT_APPLICABLE,
-            "summary": "No local sign-in form was identified; discovered forms appear to be registration, reset/change-password, or otherwise ambiguous.",
+            "assessment_state": "NOT_ASSESSED",
+            "severity": None,
+            "risk_score": None,
+            "summary": summary,
             "details": {
                 "target": target,
                 "candidate_urls_checked": attempted_urls,
                 "forms": [f.as_dict() for f in forms],
                 "contexts": contexts,
                 "browser_discovery_used": bool(use_browser and sync_playwright is not None),
+                "operator_note": "If this application uses a custom login path (e.g. /signin, /portal), configure it in Login Page Path.",
             },
             "evidence": all_evidence,
         }
+
 
     findings: list[dict[str, Any]] = []
     field_evidence: list[str] = []

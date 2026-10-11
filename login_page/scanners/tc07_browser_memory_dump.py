@@ -37,7 +37,7 @@ def _normalize_target(value: str) -> str:
     return raw
 
 
-def _not_assessed(target: str, reason: str) -> dict[str, Any]:
+def _not_assessed(target: str, reason: str, summary: str | None = None) -> dict[str, Any]:
     return {
         "key": "tc07_browser_memory_dump",
         "name": "Browser Memory Dump",
@@ -48,11 +48,12 @@ def _not_assessed(target: str, reason: str) -> dict[str, Any]:
         "severity_rationale": "",
         "severity_components": {},
         "severity_metrics": {},
-        "summary": "TC07 is not applicable to the detected federated identity-provider login flow.",
+        "summary": summary or "TC07 is not applicable: no login form or credentials input found.",
         "raw_output": "",
         "evidence": [reason],
         "details": {"finding_confirmed": False, "not_applicable": True},
     }
+
 
 
 def _incomplete(target: str, summary: str, evidence: list[str] | None = None) -> dict[str, Any]:
@@ -81,6 +82,60 @@ def _build_probe() -> MemoryProbe:
     )
 
 
+def _run_http_fallback(normalized_target: str, cfg: Any, reason_note: str = "Playwright is not installed") -> dict[str, Any]:
+    try:
+        import requests
+        from authentication.auth_discovery import login_page_candidates, html_has_password_form
+        page_url = login_page_candidates(normalized_target, cfg.login_path)[0]
+        response = requests.get(
+            page_url,
+            timeout=cfg.timeout if hasattr(cfg, "timeout") else 10,
+            verify=cfg.verify_tls,
+            allow_redirects=True,
+        )
+        html = response.text or ""
+        has_password = html_has_password_form(html)
+        if not has_password:
+            return _not_assessed(
+                normalized_target,
+                "No password-like form was identified on the HTTP response.",
+                summary="No visible login form or password fields were discovered on the target page.",
+            )
+        cache = str(response.headers.get("Cache-Control") or "")
+        autocomplete_off = bool(re.search(r"autocomplete\s*=\s*['\"]off['\"]", html, re.I))
+        return {
+            "key": "tc07_browser_memory_dump",
+            "name": "Browser Memory Dump",
+            "status": "REVIEW REQUIRED",
+            "assessment_state": "REVIEW_REQUIRED",
+            "summary": (
+                f"{reason_note}; the login page HTML was inspected via HTTP instead. "
+                "Verify password caching headers and form security controls."
+            ),
+            "raw_output": "",
+            "evidence": [
+                f"login_candidate={response.url}",
+                f"password_field_present={has_password}",
+                f"autocomplete_off_observed={autocomplete_off}",
+                f"cache_control={cache or '<absent>'}",
+                reason_note,
+            ],
+            "details": {
+                "finding_confirmed": False,
+                "http_fallback": True,
+                "password_field_present": has_password,
+                "operator_action": "Inspect browser DOM/heap retention of credential input.",
+            },
+        }
+    except Exception as exc:
+        return _incomplete(
+            normalized_target,
+            "TC07 could not reach the configured login page path.",
+            [f"{type(exc).__name__}: {exc}"],
+        )
+
+
+
 def scan_browser_memory_dump(
     target: str,
     *,
@@ -99,49 +154,9 @@ def scan_browser_memory_dump(
         )
 
     if sync_playwright is None:
-        try:
-            import requests
-            from authentication.auth_discovery import login_page_candidates, html_has_password_form
-            page_url = login_page_candidates(normalized_target, cfg.login_path)[0]
-            response = requests.get(page_url, timeout=cfg.timeout if hasattr(cfg, "timeout") else 10, verify=cfg.verify_tls, allow_redirects=True)
-            html = response.text or ""
-            has_password = html_has_password_form(html)
-            cache = str(response.headers.get("Cache-Control") or "")
-            autocomplete_off = bool(re.search(r"autocomplete\s*=\s*['\"]off['\"]", html, re.I)) if has_password else False
-            return {
-                "key": "tc07_browser_memory_dump",
-                "name": "Browser Memory Dump",
-                "status": "REVIEW REQUIRED",
-                "assessment_state": "REVIEW_REQUIRED",
-                "summary": (
-                    "Playwright is not installed, so a heap/DOM memory dump could not be collected. "
-                    "The login page HTML was inspected instead; complete this test by installing Chromium "
-                    "for Playwright."
-                ),
-                "raw_output": "",
-                "evidence": [
-                    f"login_candidate={response.url}",
-                    f"password_field_present={has_password}",
-                    f"autocomplete_off_observed={autocomplete_off}",
-                    f"cache_control={cache or '<absent>'}",
-                    "playwright_not_installed",
-                ],
-                "details": {
-                    "finding_confirmed": False,
-                    "http_fallback": True,
-                    "password_field_present": has_password,
-                    "operator_action": (
-                        "Install Playwright (`pip install playwright` and `playwright install chromium`) "
-                        "and re-run TC07 to inspect DOM/heap retention of credential input."
-                    ),
-                },
-            }
-        except Exception as exc:
-            return _incomplete(
-                normalized_target,
-                "TC07 requires Playwright for browser-level memory testing, and the HTTP fallback could not complete.",
-                [f"{type(exc).__name__}: {exc}", "Playwright is not installed."],
-            )
+        return _run_http_fallback(normalized_target, cfg, "Playwright is not installed")
+
+
 
     from authentication.auth_discovery import login_page_candidates
     candidates = login_page_candidates(normalized_target, cfg.login_path)
@@ -176,11 +191,19 @@ def scan_browser_memory_dump(
     # browser execution actually established that no password input exists.
     # We infer this from a clear browser error rather than guessing from HTTP.
     if run.errors and not run.observations:
-        return _incomplete(
+        if any("visible username/password fields were not discovered" in err for err in run.errors):
+            return _not_assessed(
+                normalized_target,
+                "No visible login or password fields were discovered on the target page.",
+                summary="No visible login form or password fields were discovered on the target page.",
+            )
+        return _run_http_fallback(
             normalized_target,
-            "TC07 could not complete the browser-memory assessment.",
-            run.errors,
+            cfg,
+            f"Browser execution issue ({run.errors[0] if run.errors else 'unavailable'})",
         )
+
+
 
     result = analyze_browser_memory(
         target=normalized_target,

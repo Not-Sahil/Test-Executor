@@ -1,7 +1,16 @@
+import asyncio
 import json
 import os
+import sys
 from html import escape
 from pathlib import Path
+
+if sys.platform == "win32":
+    try:
+        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+    except Exception:
+        pass
+
 
 _BROWSER_DIR = Path(__file__).resolve().parent / ".playwright-browsers"
 if _BROWSER_DIR.exists():
@@ -1368,8 +1377,14 @@ def run_login_page_suite(
 ) -> list:
     """Run all 17 Login Page testcases in deterministic TC01→TC17 order."""
     import importlib
+    if sys.platform == "win32":
+        try:
+            asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+        except Exception:
+            pass
 
     credentials = credentials or []
+
     candidate_usernames = candidate_usernames or list(dict.fromkeys(
         str(item.get("username") or "").strip() for item in credentials if str(item.get("username") or "").strip()
     ))
@@ -1584,25 +1599,27 @@ def run_login_page_suite(
             results.append(result)
 
         except Exception as exc:
+            err_msg = str(exc).strip() or type(exc).__name__
             results.append(
                 _coerce_login_result(
                     {
                         "key": key,
                         "name": name,
                         "status": "ERROR",
-                        "summary": f"{name} failed to execute: {exc}",
+                        "summary": f"{name} failed to execute: {err_msg}",
                         "details": {
                             "module": f"login_page.scanners.{key}",
                             "exception_type": type(exc).__name__,
                             "error": str(exc),
                         },
-                        "evidence": [str(exc)],
+                        "evidence": [f"{type(exc).__name__}: {exc}" if str(exc) else type(exc).__name__],
                         "raw_output": "",
                     },
                     key,
                     name,
                 )
             )
+
 
     return results
 

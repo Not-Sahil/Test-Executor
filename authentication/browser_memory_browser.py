@@ -567,11 +567,19 @@ def run_browser_memory_assessment(
 
     from authentication.auth_discovery import login_page_candidates
     login_url = _absolute(target, config.login_path)
-    candidate_urls = login_page_candidates(target, config.login_path) or [login_url]
+    candidate_urls = login_page_candidates(target, config.login_path)
+    import sys
+    if sys.platform == "win32":
+        try:
+            import asyncio
+            asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+        except Exception:
+            pass
 
     try:
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=True)
+
             context = browser.new_context(ignore_https_errors=not config.verify_tls)
             page = context.new_page()
 
