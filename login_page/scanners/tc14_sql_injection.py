@@ -607,6 +607,13 @@ def _assess_target(
             "triggering_pair_comparison": differential_details,
             "pairs": pair_analyses,
         },
+        "exploit_context": {
+            "auth_bypassed": "auth_bypass" in findings,
+            "blind_differential": bool(differential),
+            "syntax_error_leak": bool("new_sql_error" in findings or "control_sql_error" in findings),
+            "dbms_disclosed": [k for k in findings if k in ("mysql", "postgresql", "mssql", "oracle", "sqlite")],
+            "triggering_payload": triggering_payload.get("payload") if triggering_payload else None,
+        },
     }
     return {
         "status": status,
@@ -686,6 +693,7 @@ def scan_sql_injection(target: str, *, config: SQLiConfig | None = None, verify_
         }
     assessments = [_assess_target(session, item, baseline, cfg) for item in targets]
     statuses = [x["status"] for x in assessments]
+    chosen = None
     if STATUS_UNSAFE in statuses:
         status = STATUS_UNSAFE
         chosen = next(a for a in assessments if a["status"] == STATUS_UNSAFE)
@@ -713,6 +721,8 @@ def scan_sql_injection(target: str, *, config: SQLiConfig | None = None, verify_
         if triggering is None and payload:
             triggering = payload
 
+    exploit_ctx = chosen.get("details", {}).get("exploit_context", {}) if isinstance(chosen, dict) else {}
+
     return {
         "status": status,
         "summary": summary,
@@ -725,6 +735,7 @@ def scan_sql_injection(target: str, *, config: SQLiConfig | None = None, verify_
             "payload_library": _payload_metadata(),
             "payloads_used": _payload_metadata()["payloads"],
             "triggering_payload": triggering,
+            "exploit_context": exploit_ctx,
             "password_strategy": "random_non_empty",
             "tls_verification_relaxed": tls_relaxed,
             "assessments": assessments,

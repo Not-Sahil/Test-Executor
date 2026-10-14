@@ -613,6 +613,141 @@ def _render_category(
         )
 
 
+def render_interactive_cvss_adjuster(result, key_prefix: str) -> None:
+    """Render an interactive NIST CVSS v4.0 calculator directly in Streamlit."""
+    import streamlit as st
+    from urllib.parse import quote
+    try:
+        from cvss import CVSS4
+    except ImportError:
+        st.warning("Please install the 'cvss' library (`pip install cvss`) to enable live calculation.")
+        return
+
+    details = getattr(result, "details", None)
+    if not isinstance(details, dict):
+        return
+    cvss = details.get("cvss")
+    if not isinstance(cvss, dict):
+        return
+
+    with st.expander("🛠️ Interactive NIST CVSS v4.0 Calculator & Adjuster", expanded=False):
+        st.caption("Adjust metrics below to see how real environmental factors or deeper exploit findings change the official NIST CVSS v4.0 score:")
+
+        # Parse current vector or use defaults
+        curr_vec = str(cvss.get("vector", ""))
+        metric_vals = {}
+        if curr_vec.startswith("CVSS:4.0/"):
+            for chunk in curr_vec.replace("CVSS:4.0/", "").split("/"):
+                if ":" in chunk:
+                    k, v = chunk.split(":", 1)
+                    metric_vals[k] = v
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.markdown("**Exploitability Metrics**")
+            av = st.selectbox(
+                "Attack Vector (AV)",
+                options=["N", "A", "L", "P"],
+                index=["N", "A", "L", "P"].index(metric_vals.get("AV", "N")),
+                format_func=lambda x: {"N": "Network (Remote)", "A": "Adjacent (LAN/Wi-Fi)", "L": "Local System", "P": "Physical"}.get(x, x),
+                key=f"{key_prefix}_av"
+            )
+            ac = st.selectbox(
+                "Attack Complexity (AC)",
+                options=["L", "H"],
+                index=["L", "H"].index(metric_vals.get("AC", "L")),
+                format_func=lambda x: {"L": "Low (Reliable/No special setup)", "H": "High (Evasion/Race condition)"}.get(x, x),
+                key=f"{key_prefix}_ac"
+            )
+            at = st.selectbox(
+                "Attack Requirements (AT)",
+                options=["N", "P"],
+                index=["N", "P"].index(metric_vals.get("AT", "N")),
+                format_func=lambda x: {"N": "None (Always applicable)", "P": "Present (e.g. MitM / Race)"}.get(x, x),
+                key=f"{key_prefix}_at"
+            )
+            pr = st.selectbox(
+                "Privileges Required (PR)",
+                options=["N", "L", "H"],
+                index=["N", "L", "H"].index(metric_vals.get("PR", "N")),
+                format_func=lambda x: {"N": "None (Unauthenticated)", "L": "Low (Normal User)", "H": "High (Admin/Root)"}.get(x, x),
+                key=f"{key_prefix}_pr"
+            )
+            ui = st.selectbox(
+                "User Interaction (UI)",
+                options=["N", "P", "A"],
+                index=["N", "P", "A"].index(metric_vals.get("UI", "N")),
+                format_func=lambda x: {"N": "None", "P": "Passive (Victim navigates)", "A": "Active (Victim performs action)"}.get(x, x),
+                key=f"{key_prefix}_ui"
+            )
+
+        with col2:
+            st.markdown("**Vulnerable System Impact**")
+            vc = st.selectbox(
+                "Confidentiality (VC)",
+                options=["N", "L", "H"],
+                index=["N", "L", "H"].index(metric_vals.get("VC", "L")),
+                format_func=lambda x: {"N": "None", "L": "Low (Partial disclosure)", "H": "High (Total data loss/Auth tokens)"}.get(x, x),
+                key=f"{key_prefix}_vc"
+            )
+            vi = st.selectbox(
+                "Integrity (VI)",
+                options=["N", "L", "H"],
+                index=["N", "L", "H"].index(metric_vals.get("VI", "N")),
+                format_func=lambda x: {"N": "None", "L": "Low (Partial modify)", "H": "High (Full admin compromise)"}.get(x, x),
+                key=f"{key_prefix}_vi"
+            )
+            va = st.selectbox(
+                "Availability (VA)",
+                options=["N", "L", "H"],
+                index=["N", "L", "H"].index(metric_vals.get("VA", "N")),
+                format_func=lambda x: {"N": "None", "L": "Low (Throttling/Degraded)", "H": "High (Full shutdown/Denial)"}.get(x, x),
+                key=f"{key_prefix}_va"
+            )
+
+        with col3:
+            st.markdown("**Subsequent System Impact**")
+            sc = st.selectbox(
+                "Subsequent Conf. (SC)",
+                options=["N", "L", "H"],
+                index=["N", "L", "H"].index(metric_vals.get("SC", "N")),
+                key=f"{key_prefix}_sc"
+            )
+            si = st.selectbox(
+                "Subsequent Integ. (SI)",
+                options=["N", "L", "H"],
+                index=["N", "L", "H"].index(metric_vals.get("SI", "N")),
+                key=f"{key_prefix}_si"
+            )
+            sa = st.selectbox(
+                "Subsequent Avail. (SA)",
+                options=["N", "L", "H"],
+                index=["N", "L", "H"].index(metric_vals.get("SA", "N")),
+                key=f"{key_prefix}_sa"
+            )
+
+        # Build dynamic vector & calculate live NIST score
+        dynamic_vec = f"CVSS:4.0/AV:{av}/AC:{ac}/AT:{at}/PR:{pr}/UI:{ui}/VC:{vc}/VI:{vi}/VA:{va}/SC:{sc}/SI:{si}/SA:{sa}"
+        try:
+            parsed = CVSS4(dynamic_vec)
+            live_score = round(float(parsed.base_score), 1)
+            live_sev = str(parsed.severity)
+        except Exception:
+            live_score = "N/A"
+            live_sev = "Unknown"
+
+        st.divider()
+        m_col1, m_col2, m_col3 = st.columns([1, 1, 2])
+        m_col1.metric("Adjusted CVSS-B", live_score)
+        m_col2.metric("Severity", live_sev)
+        with m_col3:
+            encoded_vec = quote(dynamic_vec, safe=":/")
+            nist_url = f"https://nvd.nist.gov/vuln-metrics/cvss/v4-calculator?vector={encoded_vec}&version=4.0"
+            st.code(dynamic_vec, language="text")
+            st.markdown(f"🔗 [Open Pre-filled NIST NVD Official Calculator]({nist_url})")
+
+
 def render_combined_report(
     results: list,
     target_url: str,
@@ -859,6 +994,7 @@ def render_combined_report(
                     st.metric("Severity", str(cvss.get("severity", "Pending calculation")))
                 st.code(str(cvss.get("vector", "")), language="text")
                 st.caption(str(cvss.get("method", "")))
+                render_interactive_cvss_adjuster(result, key_prefix=f"adjuster_{getattr(result, 'key', 'item')}_{number}")
                 st.markdown(f"[Open the NIST CVSS v4.0 calculator]({cvss.get('calculator_url', 'https://nvd.nist.gov/vuln-metrics/cvss/v4-calculator')})")
 
             if result.details:

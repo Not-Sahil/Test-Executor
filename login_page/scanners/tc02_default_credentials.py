@@ -245,6 +245,14 @@ def scan_default_credentials(
             # Use a fresh session is intentionally avoided: this preserves the authenticated state
             # needed for configured privilege probes.
             result.details["confirmed"] = attempt.as_dict()
+            result.details["exploit_context"] = {
+                "login_succeeded": True,
+                "role": str(privilege).lower(),
+                "username": attempt.username,
+                "auth_bypassed": True,
+                "exposure": config.asset_exposure.lower() if hasattr(config, "asset_exposure") else "public",
+                "scope": config.scope.lower() if hasattr(config, "scope") else "same_system",
+            }
             result.status = "UNSAFE"
             result.summary = _build_confirmed_summary(attempt)
             severity = _severity_for_privilege(privilege, config)
