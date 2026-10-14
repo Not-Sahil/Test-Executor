@@ -1,0 +1,33 @@
+[
+  {
+    "id": "GB-SESSION-05-P01",
+    "testcase_id": "GB-SESSION-05",
+    "name": "admin_session_isolation",
+    "category": "privilege_audit",
+    "value": {
+      "roles": [
+        "admin",
+        "user"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Verify administrative sessions use distinct, segregated session tokens",
+    "expected_secure_behavior": "Isolated token namespaces and strict re-auth on sensitive actions",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-05.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "privilege_audit",
+      "session"
+    ]
+  }
+]

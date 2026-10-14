@@ -1,0 +1,54 @@
+[
+  {
+    "id": "GB-INJ-18-P01",
+    "testcase_id": "GB-INJ-18",
+    "name": "eval_phpinfo",
+    "category": "code_probe",
+    "value": "phpinfo();",
+    "encoding": "plain",
+    "purpose": "Verify dynamic code evaluation constructs (eval, exec) are not fed user input",
+    "expected_secure_behavior": "Input treated as literal data string",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-18.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "code_probe",
+      "inj"
+    ]
+  },
+  {
+    "id": "GB-INJ-18-P02",
+    "testcase_id": "GB-INJ-18",
+    "name": "python_eval",
+    "category": "code_probe",
+    "value": "__import__('os').name",
+    "encoding": "plain",
+    "purpose": "Verify Python eval / exec constructs reject user code input",
+    "expected_secure_behavior": "Literal data handling only",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-18.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "code_probe",
+      "inj"
+    ]
+  }
+]

@@ -130,6 +130,14 @@ def assess_method_interchange(
         and not alternate_valid.rejected_signal
     )
 
+    if expected_valid is not None and not expected_valid_ok:
+        return {
+            "status": "INCOMPLETE",
+            "assessment_state": "INCOMPLETE",
+            "finding_confirmed": False,
+            "reason": "Baseline valid authentication could not be established on the expected method.",
+        }
+
     if expected_wrong_ok and alternate_wrong_ok:
         return {
             "status": "UNSAFE",

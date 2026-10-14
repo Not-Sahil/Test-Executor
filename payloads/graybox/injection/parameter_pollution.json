@@ -1,0 +1,30 @@
+[
+  {
+    "id": "GB-INJ-10-P01",
+    "testcase_id": "GB-INJ-10",
+    "name": "duplicate_query_params",
+    "category": "hpp_probe",
+    "value": {
+      "query": "id=1&id=2"
+    },
+    "encoding": "plain",
+    "purpose": "Test HTTP parameter pollution handling across gateway and backend",
+    "expected_secure_behavior": "Deterministic, safe parameter handling",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-10.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "hpp_probe",
+      "inj"
+    ]
+  }
+]

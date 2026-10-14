@@ -1,0 +1,65 @@
+[
+  {
+    "id": "GB-SESSION-15-P01",
+    "testcase_id": "GB-SESSION-15",
+    "name": "cross_account_resource_access",
+    "category": "role_comparison",
+    "value": {
+      "owner_role": "USER_A",
+      "requester_role": "USER_B",
+      "resource_id": "test_resource_101"
+    },
+    "encoding": "plain",
+    "purpose": "Verify User B cannot access or modify resources owned by User A",
+    "expected_secure_behavior": "HTTP 403 Forbidden or 404 Not Found",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-15.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "role_comparison",
+      "session"
+    ]
+  },
+  {
+    "id": "GB-SESSION-15-P02",
+    "testcase_id": "GB-SESSION-15",
+    "name": "numeric_id_increment",
+    "category": "parameter_tamper",
+    "value": {
+      "param": "id",
+      "test_values": [
+        1,
+        2,
+        999
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Test sequential ID manipulation on object endpoints",
+    "expected_secure_behavior": "Enforced server-side ownership validation",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-15.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "parameter_tamper",
+      "session"
+    ]
+  }
+]

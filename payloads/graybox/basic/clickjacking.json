@@ -1,0 +1,63 @@
+[
+  {
+    "id": "GB-BASIC-19-P01",
+    "testcase_id": "GB-BASIC-19",
+    "name": "x_frame_options_check",
+    "category": "header_presence",
+    "value": {
+      "header": "X-Frame-Options",
+      "valid_values": [
+        "DENY",
+        "SAMEORIGIN"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Verify application enforces framing restrictions via X-Frame-Options",
+    "expected_secure_behavior": "X-Frame-Options set to DENY or SAMEORIGIN",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-19.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "header_presence",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-19-P02",
+    "testcase_id": "GB-BASIC-19",
+    "name": "csp_frame_ancestors",
+    "category": "header_directive",
+    "value": {
+      "header": "Content-Security-Policy",
+      "directive": "frame-ancestors"
+    },
+    "encoding": "plain",
+    "purpose": "Verify Content-Security-Policy enforces frame-ancestors directive",
+    "expected_secure_behavior": "frame-ancestors 'self' or 'none'",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-19.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "header_directive",
+      "basic"
+    ]
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "GB-SESSION-02-P01",
+    "testcase_id": "GB-SESSION-02",
+    "name": "cookie_domain_scope",
+    "category": "cookie_attribute",
+    "value": {
+      "attribute": "Domain"
+    },
+    "encoding": "plain",
+    "purpose": "Verify session cookie domain is not over-scoped to public super-domains",
+    "expected_secure_behavior": "Exact domain or restrictive sub-domain scope",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-02.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cookie_attribute",
+      "session"
+    ]
+  },
+  {
+    "id": "GB-SESSION-02-P02",
+    "testcase_id": "GB-SESSION-02",
+    "name": "cookie_path_scope",
+    "category": "cookie_attribute",
+    "value": {
+      "attribute": "Path"
+    },
+    "encoding": "plain",
+    "purpose": "Verify session cookie path scope is appropriate",
+    "expected_secure_behavior": "Restricted path or standard root path",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-02.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cookie_attribute",
+      "session"
+    ]
+  }
+]

@@ -1,0 +1,33 @@
+[
+  {
+    "id": "GB-SESSION-10-P01",
+    "testcase_id": "GB-SESSION-10",
+    "name": "session_variable_overloading",
+    "category": "variable_tampering",
+    "value": {
+      "step_order": [
+        "unauth_workflow",
+        "protected_workflow"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Verify session state variables cannot be populated by alternate unauthenticated pathways",
+    "expected_secure_behavior": "Strict state separation across distinct modules",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-10.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "variable_tampering",
+      "session"
+    ]
+  }
+]

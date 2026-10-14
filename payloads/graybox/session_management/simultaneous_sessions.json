@@ -1,0 +1,30 @@
+[
+  {
+    "id": "GB-SESSION-06-P01",
+    "testcase_id": "GB-SESSION-06",
+    "name": "concurrent_login_handling",
+    "category": "session_concurrency",
+    "value": {
+      "simultaneous_logins": 2
+    },
+    "encoding": "plain",
+    "purpose": "Verify application session management policy for concurrent logins from different locations",
+    "expected_secure_behavior": "Monitored or terminated older sessions",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-06.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "session_concurrency",
+      "session"
+    ]
+  }
+]

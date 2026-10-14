@@ -1,0 +1,64 @@
+[
+  {
+    "id": "GB-BASIC-05-P01",
+    "testcase_id": "GB-BASIC-05",
+    "name": "trace_method",
+    "category": "http_method",
+    "value": {
+      "method": "TRACE",
+      "headers": {
+        "X-Custom-Echo": "AuditTraceValue"
+      }
+    },
+    "encoding": "plain",
+    "purpose": "Check if TRACE reflects sensitive headers or cookies",
+    "expected_secure_behavior": "TRACE is disabled (HTTP 405 or 501)",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-05.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "http_method",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-05-P02",
+    "testcase_id": "GB-BASIC-05",
+    "name": "track_method",
+    "category": "http_method",
+    "value": {
+      "method": "TRACK",
+      "headers": {
+        "X-Custom-Echo": "AuditTrackValue"
+      }
+    },
+    "encoding": "plain",
+    "purpose": "Check if proprietary TRACK method is enabled",
+    "expected_secure_behavior": "TRACK is disabled (HTTP 405 or 501)",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-05.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "http_method",
+      "basic"
+    ]
+  }
+]

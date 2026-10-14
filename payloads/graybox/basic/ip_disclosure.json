@@ -1,0 +1,35 @@
+[
+  {
+    "id": "GB-BASIC-16-P01",
+    "testcase_id": "GB-BASIC-16",
+    "name": "public_ip_in_headers",
+    "category": "header_inspection",
+    "value": {
+      "headers": [
+        "X-Forwarded-For",
+        "X-Client-IP",
+        "X-Real-IP",
+        "Via"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Inspect response headers for internal routing infrastructure IP disclosure",
+    "expected_secure_behavior": "Headers stripped or sanitized",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-16.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "header_inspection",
+      "basic"
+    ]
+  }
+]

@@ -1,0 +1,59 @@
+[
+  {
+    "id": "GB-FORM-08-P01",
+    "testcase_id": "GB-FORM-08",
+    "name": "username_differential_error",
+    "category": "response_comparison",
+    "value": {
+      "valid_user_hint": "admin",
+      "invalid_user_hint": "nonexistent_user_99212"
+    },
+    "encoding": "plain",
+    "purpose": "Compare error responses for valid vs invalid usernames",
+    "expected_secure_behavior": "Generic error message returned ('Invalid username or password')",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-form-08.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "response_comparison",
+      "form"
+    ]
+  },
+  {
+    "id": "GB-FORM-08-P02",
+    "testcase_id": "GB-FORM-08",
+    "name": "forgot_password_differential",
+    "category": "response_comparison",
+    "value": {
+      "endpoint": "forgot_password"
+    },
+    "encoding": "plain",
+    "purpose": "Compare forgot-password response for registered vs unregistered email",
+    "expected_secure_behavior": "Identical confirmation message returned",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-form-08.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "response_comparison",
+      "form"
+    ]
+  }
+]

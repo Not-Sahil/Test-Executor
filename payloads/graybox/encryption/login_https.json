@@ -1,0 +1,30 @@
+[
+  {
+    "id": "GB-ENC-04-P01",
+    "testcase_id": "GB-ENC-04",
+    "name": "login_page_transport",
+    "category": "transport_scheme",
+    "value": {
+      "required_scheme": "https"
+    },
+    "encoding": "plain",
+    "purpose": "Verify the login landing page itself is loaded over HTTPS",
+    "expected_secure_behavior": "HTTPS transport required for login page",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-enc-04.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "transport_scheme",
+      "enc"
+    ]
+  }
+]

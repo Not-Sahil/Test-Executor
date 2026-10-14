@@ -1,0 +1,106 @@
+[
+  {
+    "id": "GB-INJ-01-P01",
+    "testcase_id": "GB-INJ-01",
+    "name": "script_tag",
+    "category": "xss_vector",
+    "value": "<script>/*audit*/</script>",
+    "encoding": "plain",
+    "purpose": "Test script tag reflection and context filtering",
+    "expected_secure_behavior": "Payload HTML-entity encoded or stripped",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "xss_vector",
+      "inj"
+    ]
+  },
+  {
+    "id": "GB-INJ-01-P02",
+    "testcase_id": "GB-INJ-01",
+    "name": "img_onerror",
+    "category": "xss_vector",
+    "value": "<img src=x onerror=console.log(1)>",
+    "encoding": "plain",
+    "purpose": "Test attribute event-handler injection",
+    "expected_secure_behavior": "Payload HTML-entity encoded",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "xss_vector",
+      "inj"
+    ]
+  },
+  {
+    "id": "GB-INJ-01-P03",
+    "testcase_id": "GB-INJ-01",
+    "name": "svg_onload",
+    "category": "xss_vector",
+    "value": "<svg onload=console.log(1)>",
+    "encoding": "plain",
+    "purpose": "Test SVG event handler reflection",
+    "expected_secure_behavior": "Payload HTML-entity encoded",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "xss_vector",
+      "inj"
+    ]
+  },
+  {
+    "id": "GB-INJ-01-P04",
+    "testcase_id": "GB-INJ-01",
+    "name": "javascript_pseudo_proto",
+    "category": "xss_vector",
+    "value": "javascript:console.log(1)",
+    "encoding": "plain",
+    "purpose": "Test javascript: URI scheme in href/src attributes",
+    "expected_secure_behavior": "URI scheme sanitized or blocked",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "xss_vector",
+      "inj"
+    ]
+  }
+]

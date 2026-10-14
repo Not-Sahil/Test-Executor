@@ -1,0 +1,58 @@
+[
+  {
+    "id": "GB-INJ-08-P01",
+    "testcase_id": "GB-INJ-08",
+    "name": "omitted_required_field",
+    "category": "field_omission",
+    "value": {
+      "omit": "required_key"
+    },
+    "encoding": "plain",
+    "purpose": "Verify omitting mandatory field is caught by server-side validation",
+    "expected_secure_behavior": "HTTP 400 Bad Request with missing field notice",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-08.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "field_omission",
+      "inj"
+    ]
+  },
+  {
+    "id": "GB-INJ-08-P02",
+    "testcase_id": "GB-INJ-08",
+    "name": "null_required_field",
+    "category": "field_omission",
+    "value": {
+      "set_null": "required_key"
+    },
+    "encoding": "plain",
+    "purpose": "Verify setting mandatory field to JSON null is rejected",
+    "expected_secure_behavior": "Validation error returned",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-08.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "field_omission",
+      "inj"
+    ]
+  }
+]

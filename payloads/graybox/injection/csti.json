@@ -1,0 +1,54 @@
+[
+  {
+    "id": "GB-INJ-14-P01",
+    "testcase_id": "GB-INJ-14",
+    "name": "angular_expression",
+    "category": "csti_probe",
+    "value": "{{7*7}}",
+    "encoding": "plain",
+    "purpose": "Test Client-Side Template Injection expression evaluation in AngularJS / Vue contexts",
+    "expected_secure_behavior": "Expression rendered as raw string '{{7*7}}', not computed '49'",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-14.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "csti_probe",
+      "inj"
+    ]
+  },
+  {
+    "id": "GB-INJ-14-P02",
+    "testcase_id": "GB-INJ-14",
+    "name": "curly_bracket_dollar",
+    "category": "csti_probe",
+    "value": "${7*7}",
+    "encoding": "plain",
+    "purpose": "Test ES6 / template literal reflection",
+    "expected_secure_behavior": "Raw string rendered",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-14.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "csti_probe",
+      "inj"
+    ]
+  }
+]

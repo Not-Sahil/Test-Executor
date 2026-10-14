@@ -1,0 +1,63 @@
+[
+  {
+    "id": "GB-ENC-01-P01",
+    "testcase_id": "GB-ENC-01",
+    "name": "deprecated_ssl_tls",
+    "category": "protocol_version",
+    "value": {
+      "disallowed": [
+        "SSLv2",
+        "SSLv3",
+        "TLSv1.0",
+        "TLSv1.1"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Verify legacy insecure SSL/TLS protocols are rejected",
+    "expected_secure_behavior": "Only TLS 1.2 and TLS 1.3 negotiated",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-enc-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "protocol_version",
+      "enc"
+    ]
+  },
+  {
+    "id": "GB-ENC-01-P02",
+    "testcase_id": "GB-ENC-01",
+    "name": "cipher_key_length",
+    "category": "cipher_audit",
+    "value": {
+      "min_key_length": 128
+    },
+    "encoding": "plain",
+    "purpose": "Verify cipher suite key length meets modern cryptographic standards",
+    "expected_secure_behavior": "Key length >= 128 bits, strong ciphers only",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-enc-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cipher_audit",
+      "enc"
+    ]
+  }
+]

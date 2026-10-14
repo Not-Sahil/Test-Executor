@@ -1,0 +1,54 @@
+[
+  {
+    "id": "GB-INJ-15-P01",
+    "testcase_id": "GB-INJ-15",
+    "name": "jinja_twig_polyglot",
+    "category": "ssti_probe",
+    "value": "{{7*7}}",
+    "encoding": "plain",
+    "purpose": "Test Server-Side Template Injection in Jinja2, Twig, or Freemarker",
+    "expected_secure_behavior": "Rendered as raw string, not evaluated into '49'",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-15.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "ssti_probe",
+      "inj"
+    ]
+  },
+  {
+    "id": "GB-INJ-15-P02",
+    "testcase_id": "GB-INJ-15",
+    "name": "mako_ruby_polyglot",
+    "category": "ssti_probe",
+    "value": "${7*7}",
+    "encoding": "plain",
+    "purpose": "Test template evaluation in Mako / Ruby ERB engines",
+    "expected_secure_behavior": "Rendered as raw string, not evaluated into '49'",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-15.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "ssti_probe",
+      "inj"
+    ]
+  }
+]

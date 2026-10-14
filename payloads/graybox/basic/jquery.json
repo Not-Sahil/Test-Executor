@@ -1,0 +1,30 @@
+[
+  {
+    "id": "GB-BASIC-09-P01",
+    "testcase_id": "GB-BASIC-09",
+    "name": "jquery_version_detection",
+    "category": "version_audit",
+    "value": {
+      "min_secure_version": "3.5.0"
+    },
+    "encoding": "plain",
+    "purpose": "Detect deployed jQuery version and flag deprecated or end-of-life releases",
+    "expected_secure_behavior": "jQuery >= 3.5.0 or modern framework without jQuery",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-09.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "version_audit",
+      "basic"
+    ]
+  }
+]

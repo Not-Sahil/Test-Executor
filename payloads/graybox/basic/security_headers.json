@@ -1,0 +1,36 @@
+[
+  {
+    "id": "GB-BASIC-06-P01",
+    "testcase_id": "GB-BASIC-06",
+    "name": "core_security_headers",
+    "category": "header_presence",
+    "value": {
+      "required_headers": [
+        "Content-Security-Policy",
+        "X-Content-Type-Options",
+        "X-Frame-Options",
+        "Referrer-Policy",
+        "Permissions-Policy"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Verify presence of essential defense-in-depth security headers",
+    "expected_secure_behavior": "All recommended security headers configured",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-06.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "header_presence",
+      "basic"
+    ]
+  }
+]

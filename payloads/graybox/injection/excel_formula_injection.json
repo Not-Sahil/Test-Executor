@@ -1,0 +1,80 @@
+[
+  {
+    "id": "GB-INJ-04-P01",
+    "testcase_id": "GB-INJ-04",
+    "name": "equals_formula",
+    "category": "formula_vector",
+    "value": "=1+1",
+    "encoding": "plain",
+    "purpose": "Verify input fields exported to spreadsheet sanitize leading '='",
+    "expected_secure_behavior": "Prepends single quote or sanitizes formula token",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-04.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "formula_vector",
+      "inj"
+    ]
+  },
+  {
+    "id": "GB-INJ-04-P02",
+    "testcase_id": "GB-INJ-04",
+    "name": "at_formula",
+    "category": "formula_vector",
+    "value": "@SUM(1,1)",
+    "encoding": "plain",
+    "purpose": "Verify input fields sanitize leading '@' spreadsheet directive",
+    "expected_secure_behavior": "Sanitizes leading '@'",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-04.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "formula_vector",
+      "inj"
+    ]
+  },
+  {
+    "id": "GB-INJ-04-P03",
+    "testcase_id": "GB-INJ-04",
+    "name": "plus_minus_formula",
+    "category": "formula_vector",
+    "value": "-2+3+cmd",
+    "encoding": "plain",
+    "purpose": "Verify input fields sanitize leading '-' or '+' formula operators",
+    "expected_secure_behavior": "Sanitizes leading operator tokens",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-04.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "formula_vector",
+      "inj"
+    ]
+  }
+]

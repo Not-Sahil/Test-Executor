@@ -1,0 +1,54 @@
+[
+  {
+    "id": "GB-INJ-19-P01",
+    "testcase_id": "GB-INJ-19",
+    "name": "ldap_wildcard",
+    "category": "ldap_probe",
+    "value": "*",
+    "encoding": "plain",
+    "purpose": "Test LDAP filter wildcard character handling",
+    "expected_secure_behavior": "Wildcards escaped or rejected",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-19.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "ldap_probe",
+      "inj"
+    ]
+  },
+  {
+    "id": "GB-INJ-19-P02",
+    "testcase_id": "GB-INJ-19",
+    "name": "ldap_filter_bypass",
+    "category": "ldap_probe",
+    "value": ")(cn=*)",
+    "encoding": "plain",
+    "purpose": "Test LDAP filter parenthesis closure",
+    "expected_secure_behavior": "Escaped properly in LDAP queries",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-19.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "ldap_probe",
+      "inj"
+    ]
+  }
+]

@@ -1,0 +1,35 @@
+[
+  {
+    "id": "GB-FORM-02-P01",
+    "testcase_id": "GB-FORM-02",
+    "name": "pii_storage_in_transit",
+    "category": "transit_encryption",
+    "value": {
+      "fields": [
+        "ssn",
+        "credit_card",
+        "pan",
+        "dob"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Verify PII is submitted only via encrypted POST endpoints",
+    "expected_secure_behavior": "Sensitive fields encrypted and submitted via HTTPS",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-form-02.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "transit_encryption",
+      "form"
+    ]
+  }
+]

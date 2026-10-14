@@ -1,0 +1,38 @@
+[
+  {
+    "id": "GB-ENC-07-P01",
+    "testcase_id": "GB-ENC-07",
+    "name": "query_param_credentials",
+    "category": "url_inspection",
+    "value": {
+      "sensitive_keys": [
+        "password",
+        "token",
+        "secret",
+        "auth",
+        "sessionid",
+        "api_key",
+        "ssn"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Verify query string parameters do not expose sensitive credentials in URLs",
+    "expected_secure_behavior": "Sensitive data passed in request body, not URL parameters",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-enc-07.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "url_inspection",
+      "enc"
+    ]
+  }
+]

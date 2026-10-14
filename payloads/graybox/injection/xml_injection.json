@@ -1,0 +1,28 @@
+[
+  {
+    "id": "GB-INJ-11-P01",
+    "testcase_id": "GB-INJ-11",
+    "name": "xml_element_injection",
+    "category": "xml_probe",
+    "value": "<audit>safe_test</audit>",
+    "encoding": "plain",
+    "purpose": "Verify unescaped XML markup cannot alter XML document schema",
+    "expected_secure_behavior": "XML parsed securely with schema validation",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-11.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "xml_probe",
+      "inj"
+    ]
+  }
+]

@@ -1,0 +1,31 @@
+[
+  {
+    "id": "GB-ENC-08-P01",
+    "testcase_id": "GB-ENC-08",
+    "name": "http_to_https_redirect",
+    "category": "redirect_check",
+    "value": {
+      "probe_scheme": "http",
+      "expected_redirect": "https"
+    },
+    "encoding": "plain",
+    "purpose": "Verify plain HTTP requests are immediately redirected to HTTPS",
+    "expected_secure_behavior": "HTTP 301/308 redirect to HTTPS target",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-enc-08.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "redirect_check",
+      "enc"
+    ]
+  }
+]

@@ -1,0 +1,80 @@
+[
+  {
+    "id": "GB-BASIC-15-P01",
+    "testcase_id": "GB-BASIC-15",
+    "name": "absolute_url_redirect",
+    "category": "redirect_url",
+    "value": "https://example.org",
+    "encoding": "plain",
+    "purpose": "Verify redirect parameters reject absolute external URLs",
+    "expected_secure_behavior": "Redirect rejected or restricted to relative path",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-15.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "redirect_url",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-15-P02",
+    "testcase_id": "GB-BASIC-15",
+    "name": "protocol_relative_redirect",
+    "category": "redirect_url",
+    "value": "//example.org",
+    "encoding": "plain",
+    "purpose": "Verify redirect parameters reject protocol-relative URLs",
+    "expected_secure_behavior": "Redirect rejected or restricted to relative path",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-15.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "redirect_url",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-15-P03",
+    "testcase_id": "GB-BASIC-15",
+    "name": "backslash_redirect",
+    "category": "redirect_url",
+    "value": "/\\example.org",
+    "encoding": "plain",
+    "purpose": "Verify bypasses using backslashes are rejected",
+    "expected_secure_behavior": "Redirect rejected or restricted to relative path",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-15.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "redirect_url",
+      "basic"
+    ]
+  }
+]

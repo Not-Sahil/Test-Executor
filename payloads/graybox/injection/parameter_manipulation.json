@@ -1,0 +1,60 @@
+[
+  {
+    "id": "GB-INJ-09-P01",
+    "testcase_id": "GB-INJ-09",
+    "name": "admin_flag_manipulation",
+    "category": "parameter_tamper",
+    "value": {
+      "param": "is_admin",
+      "value": "true"
+    },
+    "encoding": "plain",
+    "purpose": "Verify client cannot inject unauthorized privilege parameters",
+    "expected_secure_behavior": "Unauthorized fields ignored or rejected",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-09.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "parameter_tamper",
+      "inj"
+    ]
+  },
+  {
+    "id": "GB-INJ-09-P02",
+    "testcase_id": "GB-INJ-09",
+    "name": "price_tampering",
+    "category": "parameter_tamper",
+    "value": {
+      "param": "amount",
+      "value": "-10.00"
+    },
+    "encoding": "plain",
+    "purpose": "Verify numeric business logic inputs validate positive values",
+    "expected_secure_behavior": "Negative amounts rejected",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-09.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "parameter_tamper",
+      "inj"
+    ]
+  }
+]

@@ -1,0 +1,36 @@
+[
+  {
+    "id": "GB-BASIC-08-P01",
+    "testcase_id": "GB-BASIC-08",
+    "name": "sensitive_regex_patterns",
+    "category": "regex_scan",
+    "value": {
+      "patterns": [
+        "api[_-]?key",
+        "bearer\\s+[A-Za-z0-9_-]+",
+        "aws_access_key_id",
+        "secret_key",
+        "password\\s*="
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Search client-side HTML and scripts for hardcoded secrets/tokens",
+    "expected_secure_behavior": "No secret keys or passwords exposed in frontend",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-08.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "regex_scan",
+      "basic"
+    ]
+  }
+]

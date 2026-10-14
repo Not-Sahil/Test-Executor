@@ -1,0 +1,65 @@
+[
+  {
+    "id": "GB-BASIC-03-P01",
+    "testcase_id": "GB-BASIC-03",
+    "name": "known_library_headers",
+    "category": "signatures",
+    "value": {
+      "libraries": [
+        "jquery",
+        "bootstrap",
+        "angular",
+        "react",
+        "express",
+        "spring"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Detect outdated client/server framework versions in headers/scripts",
+    "expected_secure_behavior": "Up to date third-party libraries",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-03.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "signatures",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-03-P02",
+    "testcase_id": "GB-BASIC-03",
+    "name": "sbom_component_scan",
+    "category": "sbom",
+    "value": {
+      "audit_cve": true
+    },
+    "encoding": "plain",
+    "purpose": "Cross-reference disclosed components against CVE database",
+    "expected_secure_behavior": "No high/critical known CVEs in active components",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-03.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "sbom",
+      "basic"
+    ]
+  }
+]

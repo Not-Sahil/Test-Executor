@@ -1,0 +1,35 @@
+[
+  {
+    "id": "GB-FORM-04-P01",
+    "testcase_id": "GB-FORM-04",
+    "name": "remember_me_cookie_token",
+    "category": "cookie_entropy",
+    "value": {
+      "cookie_names": [
+        "remember_me",
+        "remember",
+        "rm_token",
+        "persist"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Evaluate entropy and secure flags of persistent remember-me tokens",
+    "expected_secure_behavior": "High-entropy, HttpOnly, Secure remember-me cookie",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-form-04.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cookie_entropy",
+      "form"
+    ]
+  }
+]

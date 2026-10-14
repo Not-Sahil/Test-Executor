@@ -1,0 +1,58 @@
+[
+  {
+    "id": "GB-BASIC-14-P01",
+    "testcase_id": "GB-BASIC-14",
+    "name": "untrusted_host_header",
+    "category": "header_tamper",
+    "value": {
+      "Host": "evil-audit-target.com"
+    },
+    "encoding": "plain",
+    "purpose": "Verify application does not reflect arbitrary Host header in password reset or link generation",
+    "expected_secure_behavior": "Host header validated against server allowlist",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-14.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "header_tamper",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-14-P02",
+    "testcase_id": "GB-BASIC-14",
+    "name": "forwarded_host_header",
+    "category": "header_tamper",
+    "value": {
+      "X-Forwarded-Host": "evil-audit-target.com"
+    },
+    "encoding": "plain",
+    "purpose": "Verify reverse proxy headers are not blindly trusted for canonical URLs",
+    "expected_secure_behavior": "X-Forwarded-Host ignored or validated",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-14.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "header_tamper",
+      "basic"
+    ]
+  }
+]

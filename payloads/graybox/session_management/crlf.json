@@ -1,0 +1,54 @@
+[
+  {
+    "id": "GB-SESSION-18-P01",
+    "testcase_id": "GB-SESSION-18",
+    "name": "header_injection_crlf",
+    "category": "crlf_probe",
+    "value": "%0d%0aSet-Cookie:+auditcrlf=test",
+    "encoding": "plain",
+    "purpose": "Verify CRLF sequence injection in parameters cannot inject arbitrary response headers",
+    "expected_secure_behavior": "CRLF stripped or rejected with HTTP 400",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-18.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "crlf_probe",
+      "session"
+    ]
+  },
+  {
+    "id": "GB-SESSION-18-P02",
+    "testcase_id": "GB-SESSION-18",
+    "name": "crlf_raw_break",
+    "category": "crlf_probe",
+    "value": "\r\nSet-Cookie: auditcrlf=test",
+    "encoding": "plain",
+    "purpose": "Verify raw carriage-return line-feed sequences are rejected",
+    "expected_secure_behavior": "Headers rejected or sanitized",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-18.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "crlf_probe",
+      "session"
+    ]
+  }
+]

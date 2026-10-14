@@ -1,0 +1,31 @@
+[
+  {
+    "id": "GB-INJ-07-P01",
+    "testcase_id": "GB-INJ-07",
+    "name": "content_type_mutation",
+    "category": "content_type_probe",
+    "value": {
+      "header": "Content-Type",
+      "value": "text/xml"
+    },
+    "encoding": "plain",
+    "purpose": "Submit unexpected MIME type to test server-side parser robustness",
+    "expected_secure_behavior": "Strict Content-Type enforcement (HTTP 415)",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-07.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "content_type_probe",
+      "inj"
+    ]
+  }
+]

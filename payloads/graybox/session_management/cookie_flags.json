@@ -1,0 +1,90 @@
+[
+  {
+    "id": "GB-SESSION-01-P01",
+    "testcase_id": "GB-SESSION-01",
+    "name": "httponly_flag_check",
+    "category": "cookie_attribute",
+    "value": {
+      "attribute": "HttpOnly"
+    },
+    "encoding": "plain",
+    "purpose": "Verify session cookies have HttpOnly flag set",
+    "expected_secure_behavior": "HttpOnly flag present",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cookie_attribute",
+      "session"
+    ]
+  },
+  {
+    "id": "GB-SESSION-01-P02",
+    "testcase_id": "GB-SESSION-01",
+    "name": "secure_flag_check",
+    "category": "cookie_attribute",
+    "value": {
+      "attribute": "Secure"
+    },
+    "encoding": "plain",
+    "purpose": "Verify session cookies have Secure flag set",
+    "expected_secure_behavior": "Secure flag present",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cookie_attribute",
+      "session"
+    ]
+  },
+  {
+    "id": "GB-SESSION-01-P03",
+    "testcase_id": "GB-SESSION-01",
+    "name": "samesite_flag_check",
+    "category": "cookie_attribute",
+    "value": {
+      "attribute": "SameSite",
+      "allowed": [
+        "Lax",
+        "Strict"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Verify SameSite attribute is configured",
+    "expected_secure_behavior": "SameSite set to Lax or Strict",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cookie_attribute",
+      "session"
+    ]
+  }
+]

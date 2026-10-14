@@ -1,0 +1,30 @@
+[
+  {
+    "id": "GB-FORM-01-P01",
+    "testcase_id": "GB-FORM-01",
+    "name": "password_input_type",
+    "category": "input_inspection",
+    "value": {
+      "type": "password"
+    },
+    "encoding": "plain",
+    "purpose": "Verify password fields mask character input by default",
+    "expected_secure_behavior": "Input type='password'",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-form-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "input_inspection",
+      "form"
+    ]
+  }
+]

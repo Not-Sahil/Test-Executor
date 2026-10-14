@@ -1,0 +1,30 @@
+[
+  {
+    "id": "GB-SESSION-08-P01",
+    "testcase_id": "GB-SESSION-08",
+    "name": "post_logout_cookie_invalidation",
+    "category": "transition_scenario",
+    "value": {
+      "action": "logout"
+    },
+    "encoding": "plain",
+    "purpose": "Verify session cookies are cleared and invalidated upon logout",
+    "expected_secure_behavior": "Set-Cookie expires token or sets empty value",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-08.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "transition_scenario",
+      "session"
+    ]
+  }
+]

@@ -1,0 +1,80 @@
+[
+  {
+    "id": "GB-INJ-17-P01",
+    "testcase_id": "GB-INJ-17",
+    "name": "semicolon_echo",
+    "category": "cmd_probe",
+    "value": "; echo audit_cmd_test",
+    "encoding": "plain",
+    "purpose": "Verify shell command separator ';' is rejected or parameterized",
+    "expected_secure_behavior": "Commands executed via safe process APIs without shell",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-17.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cmd_probe",
+      "inj"
+    ]
+  },
+  {
+    "id": "GB-INJ-17-P02",
+    "testcase_id": "GB-INJ-17",
+    "name": "pipe_echo",
+    "category": "cmd_probe",
+    "value": "| echo audit_cmd_test",
+    "encoding": "plain",
+    "purpose": "Verify pipe operator '|' is not passed to system shell",
+    "expected_secure_behavior": "Safe parameterization",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-17.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cmd_probe",
+      "inj"
+    ]
+  },
+  {
+    "id": "GB-INJ-17-P03",
+    "testcase_id": "GB-INJ-17",
+    "name": "subshell_echo",
+    "category": "cmd_probe",
+    "value": "$(echo audit_cmd_test)",
+    "encoding": "plain",
+    "purpose": "Verify subshell execution '$(...)' is blocked",
+    "expected_secure_behavior": "Safe parameterization",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-17.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cmd_probe",
+      "inj"
+    ]
+  }
+]

@@ -1,0 +1,59 @@
+[
+  {
+    "id": "GB-BASIC-01-P01",
+    "testcase_id": "GB-BASIC-01",
+    "name": "ip_in_host_header",
+    "category": "host_header",
+    "value": {
+      "header": "Host",
+      "mode": "ip_address"
+    },
+    "encoding": "plain",
+    "purpose": "Verify application does not accept direct IP Host header without canonical domain redirect",
+    "expected_secure_behavior": "Redirects to canonical domain or rejects IP Host",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "host_header",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-01-P02",
+    "testcase_id": "GB-BASIC-01",
+    "name": "direct_ip_url",
+    "category": "url_probe",
+    "value": {
+      "mode": "direct_ip_target"
+    },
+    "encoding": "plain",
+    "purpose": "Verify virtual host isolation when accessed via raw IP address",
+    "expected_secure_behavior": "Rejection or default safe page",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "url_probe",
+      "basic"
+    ]
+  }
+]

@@ -1,0 +1,35 @@
+[
+  {
+    "id": "GB-FORM-05-P01",
+    "testcase_id": "GB-FORM-05",
+    "name": "captcha_presence_and_token",
+    "category": "form_inspection",
+    "value": {
+      "captcha_signatures": [
+        "g-recaptcha",
+        "h-captcha",
+        "cf-turnstile",
+        "captcha"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Verify CAPTCHA challenge is enforced on public authentication endpoints",
+    "expected_secure_behavior": "CAPTCHA challenge present or rate-limiting enforced",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-form-05.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "form_inspection",
+      "form"
+    ]
+  }
+]

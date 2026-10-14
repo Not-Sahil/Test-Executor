@@ -1,0 +1,31 @@
+[
+  {
+    "id": "GB-INJ-06-P01",
+    "testcase_id": "GB-INJ-06",
+    "name": "direct_backend_payload",
+    "category": "api_submission",
+    "value": {
+      "field": "email",
+      "value": "invalid_email_format"
+    },
+    "encoding": "plain",
+    "purpose": "Submit invalid values directly to API endpoint bypassing HTML5 pattern constraints",
+    "expected_secure_behavior": "Server-side validation rejects invalid format with HTTP 400",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-06.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "api_submission",
+      "inj"
+    ]
+  }
+]

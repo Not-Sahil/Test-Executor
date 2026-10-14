@@ -1,0 +1,86 @@
+[
+  {
+    "id": "GB-BASIC-04-P01",
+    "testcase_id": "GB-BASIC-04",
+    "name": "put_method",
+    "category": "http_method",
+    "value": {
+      "method": "PUT"
+    },
+    "encoding": "plain",
+    "purpose": "Verify unauthenticated PUT method is not permitted",
+    "expected_secure_behavior": "HTTP 405 Method Not Allowed or 403 Forbidden",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-04.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "http_method",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-04-P02",
+    "testcase_id": "GB-BASIC-04",
+    "name": "delete_method",
+    "category": "http_method",
+    "value": {
+      "method": "DELETE"
+    },
+    "encoding": "plain",
+    "purpose": "Verify unauthenticated DELETE method is not permitted",
+    "expected_secure_behavior": "HTTP 405 Method Not Allowed or 403 Forbidden",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-04.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "http_method",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-04-P03",
+    "testcase_id": "GB-BASIC-04",
+    "name": "options_method",
+    "category": "http_method",
+    "value": {
+      "method": "OPTIONS"
+    },
+    "encoding": "plain",
+    "purpose": "Check allowed methods via OPTIONS probe",
+    "expected_secure_behavior": "Only safe public methods enabled (GET, POST, HEAD)",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-04.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "http_method",
+      "basic"
+    ]
+  }
+]

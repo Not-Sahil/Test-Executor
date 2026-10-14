@@ -1,0 +1,54 @@
+[
+  {
+    "id": "GB-INJ-02-P01",
+    "testcase_id": "GB-INJ-02",
+    "name": "heading_tag",
+    "category": "html_vector",
+    "value": "<h1>AuditMarkupTest</h1>",
+    "encoding": "plain",
+    "purpose": "Verify arbitrary HTML markup injection is prevented",
+    "expected_secure_behavior": "Tags encoded into &lt;h1&gt;",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-02.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "html_vector",
+      "inj"
+    ]
+  },
+  {
+    "id": "GB-INJ-02-P02",
+    "testcase_id": "GB-INJ-02",
+    "name": "link_injection",
+    "category": "html_vector",
+    "value": "<a href='https://example.org'>AuditLink</a>",
+    "encoding": "plain",
+    "purpose": "Verify arbitrary anchor link injection is prevented",
+    "expected_secure_behavior": "Tags encoded or sanitized",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-02.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "html_vector",
+      "inj"
+    ]
+  }
+]

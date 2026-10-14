@@ -1,0 +1,91 @@
+[
+  {
+    "id": "GB-FORM-15-P01",
+    "testcase_id": "GB-FORM-15",
+    "name": "omit_otp_param",
+    "category": "tamper_scenario",
+    "value": {
+      "action": "delete_parameter",
+      "param": "otp"
+    },
+    "encoding": "plain",
+    "purpose": "Verify removing the OTP parameter completely fails validation",
+    "expected_secure_behavior": "HTTP 400 or validation rejection",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-form-15.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "tamper_scenario",
+      "form"
+    ]
+  },
+  {
+    "id": "GB-FORM-15-P02",
+    "testcase_id": "GB-FORM-15",
+    "name": "empty_otp_param",
+    "category": "tamper_scenario",
+    "value": {
+      "action": "set_value",
+      "param": "otp",
+      "value": ""
+    },
+    "encoding": "plain",
+    "purpose": "Verify empty string OTP parameter fails validation",
+    "expected_secure_behavior": "Validation error returned",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-form-15.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "tamper_scenario",
+      "form"
+    ]
+  },
+  {
+    "id": "GB-FORM-15-P03",
+    "testcase_id": "GB-FORM-15",
+    "name": "boolean_otp_param",
+    "category": "tamper_scenario",
+    "value": {
+      "action": "set_value",
+      "param": "otp",
+      "value": "true"
+    },
+    "encoding": "plain",
+    "purpose": "Verify type-juggling boolean OTP does not bypass check",
+    "expected_secure_behavior": "Validation error returned",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-form-15.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "tamper_scenario",
+      "form"
+    ]
+  }
+]

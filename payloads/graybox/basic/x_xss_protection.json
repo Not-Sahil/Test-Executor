@@ -1,0 +1,30 @@
+[
+  {
+    "id": "GB-BASIC-20-P01",
+    "testcase_id": "GB-BASIC-20",
+    "name": "xss_protection_header",
+    "category": "header_evaluation",
+    "value": {
+      "header": "X-XSS-Protection"
+    },
+    "encoding": "plain",
+    "purpose": "Evaluate X-XSS-Protection setting (0 recommended in modern browsers to prevent side-channel leaks)",
+    "expected_secure_behavior": "Header is 0 or modern CSP enforced instead",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-20.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "header_evaluation",
+      "basic"
+    ]
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "GB-FORM-16-P01",
+    "testcase_id": "GB-FORM-16",
+    "name": "superseded_otp_invalidation",
+    "category": "transition_scenario",
+    "value": {
+      "steps": [
+        "generate_otp_1",
+        "generate_otp_2",
+        "submit_otp_1"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Verify requesting a new OTP immediately invalidates previously issued OTP token",
+    "expected_secure_behavior": "Previous OTP is rejected as invalid/expired",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-form-16.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "transition_scenario",
+      "form"
+    ]
+  }
+]

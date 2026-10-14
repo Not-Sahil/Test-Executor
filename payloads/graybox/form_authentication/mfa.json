@@ -1,0 +1,30 @@
+[
+  {
+    "id": "GB-FORM-09-P01",
+    "testcase_id": "GB-FORM-09",
+    "name": "mfa_challenge_enforcement",
+    "category": "step_up_check",
+    "value": {
+      "check_step_up": true
+    },
+    "encoding": "plain",
+    "purpose": "Verify access to sensitive functionality requires valid secondary authentication factor",
+    "expected_secure_behavior": "MFA step enforced before session elevation",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-form-09.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "step_up_check",
+      "form"
+    ]
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "GB-BASIC-07-P01",
+    "testcase_id": "GB-BASIC-07",
+    "name": "null_origin",
+    "category": "cors_header",
+    "value": {
+      "origin": "null"
+    },
+    "encoding": "plain",
+    "purpose": "Verify application rejects null Origin reflection with credentials",
+    "expected_secure_behavior": "Origin not reflected or credentials disabled",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-07.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cors_header",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-07-P02",
+    "testcase_id": "GB-BASIC-07",
+    "name": "arbitrary_origin",
+    "category": "cors_header",
+    "value": {
+      "origin": "https://attacker.example.com"
+    },
+    "encoding": "plain",
+    "purpose": "Verify application rejects untrusted Origin reflection with credentials",
+    "expected_secure_behavior": "Origin not reflected or credentials disabled",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-07.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cors_header",
+      "basic"
+    ]
+  }
+]

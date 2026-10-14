@@ -1,0 +1,35 @@
+[
+  {
+    "id": "GB-SESSION-19-P01",
+    "testcase_id": "GB-SESSION-19",
+    "name": "replayed_invalid_session",
+    "category": "replay_scenario",
+    "value": {
+      "workflow": [
+        "login_user_a",
+        "capture_token",
+        "logout_user_a",
+        "replay_captured_token"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Capture valid test session, perform logout, replay old token against protected resource",
+    "expected_secure_behavior": "Old session rejected with HTTP 401/403",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-19.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "replay_scenario",
+      "session"
+    ]
+  }
+]

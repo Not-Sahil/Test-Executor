@@ -1,0 +1,90 @@
+[
+  {
+    "id": "GB-ENC-02-P01",
+    "testcase_id": "GB-ENC-02",
+    "name": "cert_validity_window",
+    "category": "certificate_audit",
+    "value": {
+      "check_expiry": true,
+      "check_not_before": true
+    },
+    "encoding": "plain",
+    "purpose": "Verify certificate is within valid time window",
+    "expected_secure_behavior": "Certificate is active and not expired",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-enc-02.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "certificate_audit",
+      "enc"
+    ]
+  },
+  {
+    "id": "GB-ENC-02-P02",
+    "testcase_id": "GB-ENC-02",
+    "name": "cert_san_hostname",
+    "category": "certificate_audit",
+    "value": {
+      "check_hostname": true
+    },
+    "encoding": "plain",
+    "purpose": "Verify Certificate Subject Alternative Name matches target hostname",
+    "expected_secure_behavior": "Hostname matches SAN/CN",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-enc-02.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "certificate_audit",
+      "enc"
+    ]
+  },
+  {
+    "id": "GB-ENC-02-P03",
+    "testcase_id": "GB-ENC-02",
+    "name": "cert_signature_algorithm",
+    "category": "certificate_audit",
+    "value": {
+      "disallowed_hash": [
+        "md5",
+        "sha1"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Verify certificate signature does not use weak digest algorithms",
+    "expected_secure_behavior": "Signed with SHA-256 or better",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-enc-02.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "certificate_audit",
+      "enc"
+    ]
+  }
+]

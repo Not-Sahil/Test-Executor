@@ -1,0 +1,80 @@
+[
+  {
+    "id": "GB-BASIC-13-P01",
+    "testcase_id": "GB-BASIC-13",
+    "name": "dot_dot_slash",
+    "category": "traversal_string",
+    "value": "../../../../etc/passwd",
+    "encoding": "plain",
+    "purpose": "Verify path traversal sequences are blocked",
+    "expected_secure_behavior": "HTTP 400/404 or path normalized safely",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-13.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "traversal_string",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-13-P02",
+    "testcase_id": "GB-BASIC-13",
+    "name": "encoded_dot_dot_slash",
+    "category": "traversal_string",
+    "value": "..%2f..%2f..%2fetc%2fpasswd",
+    "encoding": "plain",
+    "purpose": "Verify URL-encoded path traversal sequences are blocked",
+    "expected_secure_behavior": "HTTP 400/404 or safe rejection",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-13.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "traversal_string",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-13-P03",
+    "testcase_id": "GB-BASIC-13",
+    "name": "windows_traversal",
+    "category": "traversal_string",
+    "value": "..\\..\\..\\windows\\win.ini",
+    "encoding": "plain",
+    "purpose": "Verify Windows-style backslash traversal is blocked",
+    "expected_secure_behavior": "HTTP 400/404 or safe rejection",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-13.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "traversal_string",
+      "basic"
+    ]
+  }
+]

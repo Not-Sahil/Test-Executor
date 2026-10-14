@@ -1,0 +1,516 @@
+{
+  "schema_version": 1,
+  "description": "Comprehensive Gray-Box Testing Payload and Scenario Manifest",
+  "testcases": {
+    "GB-BASIC-01": {
+      "label": "Access through IP",
+      "category": "Basic",
+      "file": "basic/access_through_ip.json",
+      "count": 2
+    },
+    "GB-BASIC-02": {
+      "label": "Server banner grabbing",
+      "category": "Basic",
+      "file": "basic/server_banner_grabbing.json",
+      "count": 2
+    },
+    "GB-BASIC-03": {
+      "label": "Vulnerable components",
+      "category": "Basic",
+      "file": "basic/vulnerable_components.json",
+      "count": 2
+    },
+    "GB-BASIC-04": {
+      "label": "Arbitrary methods",
+      "category": "Basic",
+      "file": "basic/arbitrary_methods.json",
+      "count": 3
+    },
+    "GB-BASIC-05": {
+      "label": "Cross-site tracing",
+      "category": "Basic",
+      "file": "basic/cross_site_tracing.json",
+      "count": 2
+    },
+    "GB-BASIC-06": {
+      "label": "Security headers",
+      "category": "Basic",
+      "file": "basic/security_headers.json",
+      "count": 1
+    },
+    "GB-BASIC-07": {
+      "label": "CORS",
+      "category": "Basic",
+      "file": "basic/cors.json",
+      "count": 2
+    },
+    "GB-BASIC-08": {
+      "label": "Sensitive data in client-side code",
+      "category": "Basic",
+      "file": "basic/client_side_sensitive_data.json",
+      "count": 1
+    },
+    "GB-BASIC-09": {
+      "label": "jQuery",
+      "category": "Basic",
+      "file": "basic/jquery.json",
+      "count": 1
+    },
+    "GB-BASIC-10": {
+      "label": "jQuery XSS",
+      "category": "Basic",
+      "file": "basic/jquery_xss.json",
+      "count": 1
+    },
+    "GB-BASIC-11": {
+      "label": "Bootstrap",
+      "category": "Basic",
+      "file": "basic/bootstrap.json",
+      "count": 1
+    },
+    "GB-BASIC-12": {
+      "label": "Directory listing",
+      "category": "Basic",
+      "file": "basic/directory_listing.json",
+      "count": 4
+    },
+    "GB-BASIC-13": {
+      "label": "Directory traversal",
+      "category": "Basic",
+      "file": "basic/directory_traversal.json",
+      "count": 3
+    },
+    "GB-BASIC-14": {
+      "label": "Host header injection",
+      "category": "Basic",
+      "file": "basic/host_header_injection.json",
+      "count": 2
+    },
+    "GB-BASIC-15": {
+      "label": "Open redirection",
+      "category": "Basic",
+      "file": "basic/open_redirect.json",
+      "count": 3
+    },
+    "GB-BASIC-16": {
+      "label": "IP address disclosure",
+      "category": "Basic",
+      "file": "basic/ip_disclosure.json",
+      "count": 1
+    },
+    "GB-BASIC-17": {
+      "label": "Private IP disclosure",
+      "category": "Basic",
+      "file": "basic/private_ip_disclosure.json",
+      "count": 1
+    },
+    "GB-BASIC-18": {
+      "label": "ETag",
+      "category": "Basic",
+      "file": "basic/etag.json",
+      "count": 1
+    },
+    "GB-BASIC-19": {
+      "label": "Clickjacking",
+      "category": "Basic",
+      "file": "basic/clickjacking.json",
+      "count": 2
+    },
+    "GB-BASIC-20": {
+      "label": "X-XSS-Protection header",
+      "category": "Basic",
+      "file": "basic/x_xss_protection.json",
+      "count": 1
+    },
+    "GB-BASIC-21": {
+      "label": "Hardcoded credentials",
+      "category": "Basic",
+      "file": "basic/hardcoded_credentials.json",
+      "count": 1
+    },
+    "GB-ENC-01": {
+      "label": "SSL/TLS versions, algorithms, and key length",
+      "category": "Encryption",
+      "file": "encryption/tls_versions.json",
+      "count": 2
+    },
+    "GB-ENC-02": {
+      "label": "Digital certificate validity, duration, signature, and CN/SAN",
+      "category": "Encryption",
+      "file": "encryption/certificate_validation.json",
+      "count": 3
+    },
+    "GB-ENC-03": {
+      "label": "Credentials delivered only over HTTPS",
+      "category": "Encryption",
+      "file": "encryption/credentials_https.json",
+      "count": 1
+    },
+    "GB-ENC-04": {
+      "label": "Login form delivered over HTTPS",
+      "category": "Encryption",
+      "file": "encryption/login_https.json",
+      "count": 1
+    },
+    "GB-ENC-05": {
+      "label": "Session tokens delivered only over HTTPS",
+      "category": "Encryption",
+      "file": "encryption/session_tokens_https.json",
+      "count": 1
+    },
+    "GB-ENC-06": {
+      "label": "HSTS",
+      "category": "Encryption",
+      "file": "encryption/hsts.json",
+      "count": 1
+    },
+    "GB-ENC-07": {
+      "label": "Sensitive information through URL",
+      "category": "Encryption",
+      "file": "encryption/sensitive_information_in_url.json",
+      "count": 1
+    },
+    "GB-ENC-08": {
+      "label": "SSL stripping / HTTPS downgrade resistance",
+      "category": "Encryption",
+      "file": "encryption/ssl_stripping.json",
+      "count": 1
+    },
+    "GB-FORM-01": {
+      "label": "Shoulder surfing of sensitive data",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/shoulder_surfing.json",
+      "count": 1
+    },
+    "GB-FORM-02": {
+      "label": "PII and sensitive data in encrypted format",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/sensitive_data_encryption.json",
+      "count": 1
+    },
+    "GB-FORM-03": {
+      "label": "Autocomplete disabled where required",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/autocomplete.json",
+      "count": 1
+    },
+    "GB-FORM-04": {
+      "label": "Remember Me",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/remember_me.json",
+      "count": 1
+    },
+    "GB-FORM-05": {
+      "label": "CAPTCHA functionality",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/captcha.json",
+      "count": 1
+    },
+    "GB-FORM-06": {
+      "label": "Brute-force protection for login and forgot-password fields",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/rate_limiting.json",
+      "count": 1
+    },
+    "GB-FORM-07": {
+      "label": "Strong password policy",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/password_policy.json",
+      "count": 2
+    },
+    "GB-FORM-08": {
+      "label": "User enumeration",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/user_enumeration.json",
+      "count": 2
+    },
+    "GB-FORM-09": {
+      "label": "Multi-factor authentication",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/mfa.json",
+      "count": 1
+    },
+    "GB-FORM-10": {
+      "label": "Default login credentials",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/default_credentials.json",
+      "count": 4
+    },
+    "GB-FORM-11": {
+      "label": "Cache controls: private or no-cache",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/cache_controls.json",
+      "count": 1
+    },
+    "GB-FORM-12": {
+      "label": "Default OTP",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/default_otp.json",
+      "count": 3
+    },
+    "GB-FORM-13": {
+      "label": "Email flooding",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/email_flooding.json",
+      "count": 1
+    },
+    "GB-FORM-14": {
+      "label": "OTP flooding",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/otp_flooding.json",
+      "count": 1
+    },
+    "GB-FORM-15": {
+      "label": "OTP bypass through removing a parameter or changing its value",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/otp_bypass.json",
+      "count": 3
+    },
+    "GB-FORM-16": {
+      "label": "Previous OTP invalidation after generating a new OTP",
+      "category": "Form Field and Authentication",
+      "file": "form_authentication/otp_invalidation.json",
+      "count": 1
+    },
+    "GB-SESSION-01": {
+      "label": "Cookie flags: HttpOnly, Secure, SameSite, and relevant flags",
+      "category": "Session Management",
+      "file": "session_management/cookie_flags.json",
+      "count": 3
+    },
+    "GB-SESSION-02": {
+      "label": "Session cookie scope: Path and Domain",
+      "category": "Session Management",
+      "file": "session_management/cookie_scope.json",
+      "count": 2
+    },
+    "GB-SESSION-03": {
+      "label": "Session cookie duration, expiry, and Max-Age",
+      "category": "Session Management",
+      "file": "session_management/session_duration.json",
+      "count": 1
+    },
+    "GB-SESSION-04": {
+      "label": "Cookie randomness",
+      "category": "Session Management",
+      "file": "session_management/cookie_randomness.json",
+      "count": 1
+    },
+    "GB-SESSION-05": {
+      "label": "High-privilege session handling",
+      "category": "Session Management",
+      "file": "session_management/high_privilege_session.json",
+      "count": 1
+    },
+    "GB-SESSION-06": {
+      "label": "Simultaneous sessions",
+      "category": "Session Management",
+      "file": "session_management/simultaneous_sessions.json",
+      "count": 1
+    },
+    "GB-SESSION-07": {
+      "label": "Cookie randomness and session rotation",
+      "category": "Session Management",
+      "file": "session_management/session_rotation.json",
+      "count": 1
+    },
+    "GB-SESSION-08": {
+      "label": "Different cookies before and after logout",
+      "category": "Session Management",
+      "file": "session_management/cookies_before_after_logout.json",
+      "count": 1
+    },
+    "GB-SESSION-09": {
+      "label": "Session hijacking resistance",
+      "category": "Session Management",
+      "file": "session_management/session_hijacking_resistance.json",
+      "count": 1
+    },
+    "GB-SESSION-10": {
+      "label": "Session puzzling",
+      "category": "Session Management",
+      "file": "session_management/session_puzzling.json",
+      "count": 1
+    },
+    "GB-SESSION-11": {
+      "label": "Browser closure",
+      "category": "Session Management",
+      "file": "session_management/browser_closure.json",
+      "count": 1
+    },
+    "GB-SESSION-12": {
+      "label": "Deep URL / direct access to protected resources",
+      "category": "Session Management",
+      "file": "session_management/deep_url.json",
+      "count": 1
+    },
+    "GB-SESSION-13": {
+      "label": "Back and Refresh after logout",
+      "category": "Session Management",
+      "file": "session_management/back_refresh.json",
+      "count": 1
+    },
+    "GB-SESSION-14": {
+      "label": "Logout of all applicable sessions after password change",
+      "category": "Session Management",
+      "file": "session_management/logout_after_password_change.json",
+      "count": 1
+    },
+    "GB-SESSION-15": {
+      "label": "IDOR",
+      "category": "Session Management",
+      "file": "session_management/idor.json",
+      "count": 2
+    },
+    "GB-SESSION-16": {
+      "label": "Privilege escalation",
+      "category": "Session Management",
+      "file": "session_management/privilege_escalation.json",
+      "count": 2
+    },
+    "GB-SESSION-17": {
+      "label": "CSRF",
+      "category": "Session Management",
+      "file": "session_management/csrf.json",
+      "count": 2
+    },
+    "GB-SESSION-18": {
+      "label": "CRLF injection",
+      "category": "Session Management",
+      "file": "session_management/crlf.json",
+      "count": 2
+    },
+    "GB-SESSION-19": {
+      "label": "Session replay",
+      "category": "Session Management",
+      "file": "session_management/session_replay.json",
+      "count": 1
+    },
+    "GB-INJ-01": {
+      "label": "XSS",
+      "category": "Injection",
+      "file": "injection/xss.json",
+      "count": 4
+    },
+    "GB-INJ-02": {
+      "label": "HTML injection",
+      "category": "Injection",
+      "file": "injection/html_injection.json",
+      "count": 2
+    },
+    "GB-INJ-03": {
+      "label": "SQL injection",
+      "category": "Injection",
+      "file": "injection/sql_injection.json",
+      "count": 4
+    },
+    "GB-INJ-04": {
+      "label": "Excel / CSV formula injection",
+      "category": "Injection",
+      "file": "injection/excel_formula_injection.json",
+      "count": 3
+    },
+    "GB-INJ-05": {
+      "label": "Poor input validation",
+      "category": "Injection",
+      "file": "injection/input_validation.json",
+      "count": 3
+    },
+    "GB-INJ-06": {
+      "label": "Client-side validation bypass",
+      "category": "Injection",
+      "file": "injection/client_side_validation_bypass.json",
+      "count": 1
+    },
+    "GB-INJ-07": {
+      "label": "Server-side validation bypass",
+      "category": "Injection",
+      "file": "injection/server_side_validation_bypass.json",
+      "count": 1
+    },
+    "GB-INJ-08": {
+      "label": "Mandatory field bypass",
+      "category": "Injection",
+      "file": "injection/mandatory_field_bypass.json",
+      "count": 2
+    },
+    "GB-INJ-09": {
+      "label": "Parameter manipulation",
+      "category": "Injection",
+      "file": "injection/parameter_manipulation.json",
+      "count": 2
+    },
+    "GB-INJ-10": {
+      "label": "Parameter pollution",
+      "category": "Injection",
+      "file": "injection/parameter_pollution.json",
+      "count": 1
+    },
+    "GB-INJ-11": {
+      "label": "XML injection",
+      "category": "Injection",
+      "file": "injection/xml_injection.json",
+      "count": 1
+    },
+    "GB-INJ-12": {
+      "label": "XXE",
+      "category": "Injection",
+      "file": "injection/xxe.json",
+      "count": 1
+    },
+    "GB-INJ-13": {
+      "label": "XPath injection",
+      "category": "Injection",
+      "file": "injection/xpath_injection.json",
+      "count": 2
+    },
+    "GB-INJ-14": {
+      "label": "CSTI",
+      "category": "Injection",
+      "file": "injection/csti.json",
+      "count": 2
+    },
+    "GB-INJ-15": {
+      "label": "SSTI",
+      "category": "Injection",
+      "file": "injection/ssti.json",
+      "count": 2
+    },
+    "GB-INJ-16": {
+      "label": "SSI injection",
+      "category": "Injection",
+      "file": "injection/ssi_injection.json",
+      "count": 1
+    },
+    "GB-INJ-17": {
+      "label": "Command injection",
+      "category": "Injection",
+      "file": "injection/command_injection.json",
+      "count": 3
+    },
+    "GB-INJ-18": {
+      "label": "Code injection",
+      "category": "Injection",
+      "file": "injection/code_injection.json",
+      "count": 2
+    },
+    "GB-INJ-19": {
+      "label": "LDAP injection",
+      "category": "Injection",
+      "file": "injection/ldap_injection.json",
+      "count": 2
+    },
+    "GB-INJ-20": {
+      "label": "HTTP request smuggling",
+      "category": "Injection",
+      "file": "injection/http_request_smuggling.json",
+      "count": 1
+    },
+    "GB-SSRF-01": {
+      "label": "Server-Side Request Forgery",
+      "category": "SSRF",
+      "file": "ssrf/ssrf.json",
+      "count": 4
+    }
+  }
+}

@@ -1778,9 +1778,27 @@ st.caption(
     "login path and authorized credential controls where a testcase requires them."
 )
 
+# ==============================================================
+# TESTING MODE SELECTOR: BLACK BOX vs GRAY BOX
+# ==============================================================
+
+testing_mode = st.radio(
+    "Select Testing Mode",
+    ["BLACK BOX TESTING", "GRAY BOX TESTING"],
+    index=0,
+    horizontal=True,
+    key="app_testing_mode_selector",
+    help="Toggle between standard Black-Box vulnerability scanning and authenticated Gray-Box testing.",
+)
+
+if testing_mode == "GRAY BOX TESTING":
+    from graybox.ui import render_graybox_ui
+    render_graybox_ui()
+    st.stop()
+
 
 # ==============================================================
-# TARGET CONFIGURATION
+# TARGET CONFIGURATION (BLACK BOX)
 # ==============================================================
 
 st.header("0. Assessment Suite")

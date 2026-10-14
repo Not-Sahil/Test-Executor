@@ -1,0 +1,46 @@
+"""Session Management category scanners."""
+from __future__ import annotations
+
+from graybox.scanners.session_management.scanners import (
+    GBSESSION01_CookieFlags,
+    GBSESSION02_CookieScope,
+    GBSESSION03_SessionDuration,
+    GBSESSION04_CookieRandomness,
+    GBSESSION05_HighPrivilegeSession,
+    GBSESSION06_SimultaneousSessions,
+    GBSESSION07_CookieRandomnessAndRotation,
+    GBSESSION08_CookiesBeforeAfterLogout,
+    GBSESSION09_SessionHijackingResistance,
+    GBSESSION10_SessionPuzzling,
+    GBSESSION11_BrowserClosure,
+    GBSESSION12_DeepURL,
+    GBSESSION13_BackRefreshAfterLogout,
+    GBSESSION14_LogoutAfterPasswordChange,
+    GBSESSION15_IDOR,
+    GBSESSION16_PrivilegeEscalation,
+    GBSESSION17_CSRF,
+    GBSESSION18_CRLF,
+    GBSESSION19_SessionReplay,
+)
+
+__all__ = [
+    "GBSESSION01_CookieFlags",
+    "GBSESSION02_CookieScope",
+    "GBSESSION03_SessionDuration",
+    "GBSESSION04_CookieRandomness",
+    "GBSESSION05_HighPrivilegeSession",
+    "GBSESSION06_SimultaneousSessions",
+    "GBSESSION07_CookieRandomnessAndRotation",
+    "GBSESSION08_CookiesBeforeAfterLogout",
+    "GBSESSION09_SessionHijackingResistance",
+    "GBSESSION10_SessionPuzzling",
+    "GBSESSION11_BrowserClosure",
+    "GBSESSION12_DeepURL",
+    "GBSESSION13_BackRefreshAfterLogout",
+    "GBSESSION14_LogoutAfterPasswordChange",
+    "GBSESSION15_IDOR",
+    "GBSESSION16_PrivilegeEscalation",
+    "GBSESSION17_CSRF",
+    "GBSESSION18_CRLF",
+    "GBSESSION19_SessionReplay",
+]

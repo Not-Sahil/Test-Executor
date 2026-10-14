@@ -1,0 +1,30 @@
+[
+  {
+    "id": "GB-SESSION-07-P01",
+    "testcase_id": "GB-SESSION-07",
+    "name": "pre_post_auth_rotation",
+    "category": "transition_scenario",
+    "value": {
+      "action": "login"
+    },
+    "encoding": "plain",
+    "purpose": "Verify pre-authentication session identifier is regenerated upon successful login",
+    "expected_secure_behavior": "New session token assigned after authentication",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-07.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "transition_scenario",
+      "session"
+    ]
+  }
+]

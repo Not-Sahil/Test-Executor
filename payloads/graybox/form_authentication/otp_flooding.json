@@ -1,0 +1,31 @@
+[
+  {
+    "id": "GB-FORM-14-P01",
+    "testcase_id": "GB-FORM-14",
+    "name": "otp_request_burst",
+    "category": "rate_limit_probe",
+    "value": {
+      "burst": 5,
+      "interval": 0.5
+    },
+    "encoding": "plain",
+    "purpose": "Verify rapid repeated requests for new OTP tokens are throttled",
+    "expected_secure_behavior": "Cooldown enforced on new OTP generation",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-form-14.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "rate_limit_probe",
+      "form"
+    ]
+  }
+]

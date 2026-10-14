@@ -1,0 +1,48 @@
+"""Injection category scanners."""
+from __future__ import annotations
+
+from graybox.scanners.injection.scanners import (
+    GBINJ01_XSS,
+    GBINJ02_HTMLInjection,
+    GBINJ03_SQLInjection,
+    GBINJ04_ExcelFormulaInjection,
+    GBINJ05_InputValidation,
+    GBINJ06_ClientSideValidationBypass,
+    GBINJ07_ServerSideValidationBypass,
+    GBINJ08_MandatoryFieldBypass,
+    GBINJ09_ParameterManipulation,
+    GBINJ10_ParameterPollution,
+    GBINJ11_XMLInjection,
+    GBINJ12_XXE,
+    GBINJ13_XPathInjection,
+    GBINJ14_CSTI,
+    GBINJ15_SSTI,
+    GBINJ16_SSIInjection,
+    GBINJ17_CommandInjection,
+    GBINJ18_CodeInjection,
+    GBINJ19_LDAPInjection,
+    GBINJ20_HTTPRequestSmuggling,
+)
+
+__all__ = [
+    "GBINJ01_XSS",
+    "GBINJ02_HTMLInjection",
+    "GBINJ03_SQLInjection",
+    "GBINJ04_ExcelFormulaInjection",
+    "GBINJ05_InputValidation",
+    "GBINJ06_ClientSideValidationBypass",
+    "GBINJ07_ServerSideValidationBypass",
+    "GBINJ08_MandatoryFieldBypass",
+    "GBINJ09_ParameterManipulation",
+    "GBINJ10_ParameterPollution",
+    "GBINJ11_XMLInjection",
+    "GBINJ12_XXE",
+    "GBINJ13_XPathInjection",
+    "GBINJ14_CSTI",
+    "GBINJ15_SSTI",
+    "GBINJ16_SSIInjection",
+    "GBINJ17_CommandInjection",
+    "GBINJ18_CodeInjection",
+    "GBINJ19_LDAPInjection",
+    "GBINJ20_HTTPRequestSmuggling",
+]

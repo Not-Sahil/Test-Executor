@@ -1,0 +1,30 @@
+[
+  {
+    "id": "GB-SESSION-11-P01",
+    "testcase_id": "GB-SESSION-11",
+    "name": "non_persistent_session_cookie",
+    "category": "cookie_attribute",
+    "value": {
+      "check_transient": true
+    },
+    "encoding": "plain",
+    "purpose": "Verify session cookie is transient (omits persistent Expires/Max-Age for non-remember-me)",
+    "expected_secure_behavior": "Transient session cookie terminated on browser closure",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-11.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cookie_attribute",
+      "session"
+    ]
+  }
+]

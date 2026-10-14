@@ -1,0 +1,28 @@
+[
+  {
+    "id": "GB-INJ-12-P01",
+    "testcase_id": "GB-INJ-12",
+    "name": "external_entity_declaration",
+    "category": "xxe_probe",
+    "value": "<!DOCTYPE test [ <!ENTITY xxe 'audit_xxe_test'> ]><test>&xxe;</test>",
+    "encoding": "plain",
+    "purpose": "Verify XML external entities (DTD / ENTITY) are disabled in XML parsers",
+    "expected_secure_behavior": "External entity parsing disabled",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-inj-12.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "xxe_probe",
+      "inj"
+    ]
+  }
+]

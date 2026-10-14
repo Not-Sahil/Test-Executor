@@ -1,0 +1,60 @@
+[
+  {
+    "id": "GB-SESSION-16-P01",
+    "testcase_id": "GB-SESSION-16",
+    "name": "user_to_admin_route",
+    "category": "role_comparison",
+    "value": {
+      "requester_role": "USER_A",
+      "target_endpoint": "/admin/users"
+    },
+    "encoding": "plain",
+    "purpose": "Verify standard user cannot access administrative endpoints",
+    "expected_secure_behavior": "HTTP 403 Forbidden",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-16.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "role_comparison",
+      "session"
+    ]
+  },
+  {
+    "id": "GB-SESSION-16-P02",
+    "testcase_id": "GB-SESSION-16",
+    "name": "role_param_injection",
+    "category": "body_tamper",
+    "value": {
+      "param": "role",
+      "value": "administrator"
+    },
+    "encoding": "plain",
+    "purpose": "Verify self-assignment of administrative roles in profile update is rejected",
+    "expected_secure_behavior": "Role parameter ignored or rejected",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-16.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "body_tamper",
+      "session"
+    ]
+  }
+]

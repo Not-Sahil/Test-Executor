@@ -1,0 +1,30 @@
+[
+  {
+    "id": "GB-SESSION-09-P01",
+    "testcase_id": "GB-SESSION-09",
+    "name": "user_agent_binding",
+    "category": "security_control",
+    "value": {
+      "tamper_header": "User-Agent"
+    },
+    "encoding": "plain",
+    "purpose": "Verify session token cannot be reused from mismatched client fingerprint without validation",
+    "expected_secure_behavior": "Anomalous client characteristics flagged",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-09.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "security_control",
+      "session"
+    ]
+  }
+]

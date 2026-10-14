@@ -1,0 +1,62 @@
+[
+  {
+    "id": "GB-SESSION-17-P01",
+    "testcase_id": "GB-SESSION-17",
+    "name": "csrf_token_presence",
+    "category": "anti_csrf_check",
+    "value": {
+      "methods": [
+        "POST",
+        "PUT",
+        "DELETE"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Verify state-changing POST/PUT requests require valid anti-CSRF token or SameSite=Strict",
+    "expected_secure_behavior": "CSRF token validated or SameSite policy enforced",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-17.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "anti_csrf_check",
+      "session"
+    ]
+  },
+  {
+    "id": "GB-SESSION-17-P02",
+    "testcase_id": "GB-SESSION-17",
+    "name": "csrf_token_tampering",
+    "category": "tamper_scenario",
+    "value": {
+      "token": "invalid_test_token_8123"
+    },
+    "encoding": "plain",
+    "purpose": "Verify state-changing request with invalid anti-CSRF token is rejected",
+    "expected_secure_behavior": "HTTP 403 or CSRF validation error",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-17.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "tamper_scenario",
+      "session"
+    ]
+  }
+]

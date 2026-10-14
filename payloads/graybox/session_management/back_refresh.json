@@ -1,0 +1,33 @@
+[
+  {
+    "id": "GB-SESSION-13-P01",
+    "testcase_id": "GB-SESSION-13",
+    "name": "back_button_cache_inspection",
+    "category": "cache_header",
+    "value": {
+      "headers": [
+        "Cache-Control",
+        "Pragma"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Verify sensitive authenticated data cannot be viewed from browser cache after logout",
+    "expected_secure_behavior": "Cache-Control: no-store prevents back-button viewing",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-session-13.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cache_header",
+      "session"
+    ]
+  }
+]

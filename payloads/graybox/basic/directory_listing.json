@@ -1,0 +1,119 @@
+[
+  {
+    "id": "GB-BASIC-12-P01",
+    "testcase_id": "GB-BASIC-12",
+    "name": "robots_txt",
+    "category": "metadata_file",
+    "value": {
+      "path": "/robots.txt"
+    },
+    "encoding": "plain",
+    "purpose": "Inspect robots.txt for sensitive administrative paths",
+    "expected_secure_behavior": "robots.txt does not leak secret administrative portals",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-12.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "metadata_file",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-12-P02",
+    "testcase_id": "GB-BASIC-12",
+    "name": "security_txt",
+    "category": "metadata_file",
+    "value": {
+      "path": "/.well-known/security.txt"
+    },
+    "encoding": "plain",
+    "purpose": "Check security contact file availability",
+    "expected_secure_behavior": "Standard security disclosure contact published",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-12.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "metadata_file",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-12-P03",
+    "testcase_id": "GB-BASIC-12",
+    "name": "sitemap_xml",
+    "category": "metadata_file",
+    "value": {
+      "path": "/sitemap.xml"
+    },
+    "encoding": "plain",
+    "purpose": "Inspect sitemap for unauthenticated internal endpoints",
+    "expected_secure_behavior": "No restricted portals exposed in public sitemap",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-12.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "metadata_file",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-12-P04",
+    "testcase_id": "GB-BASIC-12",
+    "name": "directory_index",
+    "category": "indexing_probe",
+    "value": {
+      "paths": [
+        "/static/",
+        "/images/",
+        "/uploads/",
+        "/assets/"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Verify web server directory index listing is disabled",
+    "expected_secure_behavior": "HTTP 403 or 404, directory listing disabled",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-12.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "indexing_probe",
+      "basic"
+    ]
+  }
+]

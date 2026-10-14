@@ -1,0 +1,34 @@
+[
+  {
+    "id": "GB-BASIC-10-P01",
+    "testcase_id": "GB-BASIC-10",
+    "name": "jquery_html_xss_cve",
+    "category": "cve_probe",
+    "value": {
+      "cves": [
+        "CVE-2015-9251",
+        "CVE-2020-11022",
+        "CVE-2020-11023"
+      ]
+    },
+    "encoding": "plain",
+    "purpose": "Inspect jQuery selectors for known XSS vulnerabilities in $(location.hash)",
+    "expected_secure_behavior": "Patched against jQuery DOM XSS CVEs",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-10.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "cve_probe",
+      "basic"
+    ]
+  }
+]

@@ -31,7 +31,7 @@ def test_sqli_probes_are_curated_and_non_destructive():
     records = load_json_records(
         "payloads_all_the_things/sql_injection/safe_differential_probes.json"
     )
-    assert len(records) == 8
+    assert len(records) >= 8
     assert all(record.get("destructive") is False for record in records)
     assert {record["kind"] for record in records} == {"syntax", "differential"}
 

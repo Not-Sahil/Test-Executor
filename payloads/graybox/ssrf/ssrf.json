@@ -1,0 +1,106 @@
+[
+  {
+    "id": "GB-SSRF-01-P01",
+    "testcase_id": "GB-SSRF-01",
+    "name": "loopback_ipv4",
+    "category": "ssrf_probe",
+    "value": "http://127.0.0.1:80",
+    "encoding": "plain",
+    "purpose": "Verify URL parameters reject loopback 127.0.0.1 target addresses",
+    "expected_secure_behavior": "URL parameter validated against strict domain allowlist; local IPs blocked",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-ssrf-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "ssrf_probe",
+      "ssrf"
+    ]
+  },
+  {
+    "id": "GB-SSRF-01-P02",
+    "testcase_id": "GB-SSRF-01",
+    "name": "localhost_hostname",
+    "category": "ssrf_probe",
+    "value": "http://localhost:80",
+    "encoding": "plain",
+    "purpose": "Verify URL parameters reject localhost hostname",
+    "expected_secure_behavior": "Blocked by outbound request policy",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-ssrf-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "ssrf_probe",
+      "ssrf"
+    ]
+  },
+  {
+    "id": "GB-SSRF-01-P03",
+    "testcase_id": "GB-SSRF-01",
+    "name": "private_rfc1918",
+    "category": "ssrf_probe",
+    "value": "http://10.0.0.1:80",
+    "encoding": "plain",
+    "purpose": "Verify URL parameters reject RFC1918 private subnet IP addresses",
+    "expected_secure_behavior": "Blocked by outbound request policy",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-ssrf-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "ssrf_probe",
+      "ssrf"
+    ]
+  },
+  {
+    "id": "GB-SSRF-01-P04",
+    "testcase_id": "GB-SSRF-01",
+    "name": "cloud_metadata_service",
+    "category": "ssrf_probe",
+    "value": "http://169.254.169.254/latest/meta-data/",
+    "encoding": "plain",
+    "purpose": "Verify URL parameters reject cloud provider metadata endpoint",
+    "expected_secure_behavior": "Blocked by outbound request policy",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-ssrf-01.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "ssrf_probe",
+      "ssrf"
+    ]
+  }
+]

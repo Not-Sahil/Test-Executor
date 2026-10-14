@@ -1,0 +1,58 @@
+[
+  {
+    "id": "GB-BASIC-02-P01",
+    "testcase_id": "GB-BASIC-02",
+    "name": "head_banner_probe",
+    "category": "headers",
+    "value": {
+      "method": "HEAD"
+    },
+    "encoding": "plain",
+    "purpose": "Inspect response headers for detailed server version information",
+    "expected_secure_behavior": "Server header stripped or generic",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-02.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "headers",
+      "basic"
+    ]
+  },
+  {
+    "id": "GB-BASIC-02-P02",
+    "testcase_id": "GB-BASIC-02",
+    "name": "get_banner_probe",
+    "category": "headers",
+    "value": {
+      "method": "GET"
+    },
+    "encoding": "plain",
+    "purpose": "Inspect Server and X-Powered-By response headers",
+    "expected_secure_behavior": "No version numbers disclosed",
+    "required": true,
+    "risk_level": "low",
+    "destructive": false,
+    "requires_authorization": true,
+    "requires_test_environment": false,
+    "requires_account_role": [],
+    "evidence_type": "response_inspection",
+    "source": {
+      "repository": "Project-Curated OWASP WSTG v4.2 / ASVS v4.0",
+      "file": "payloads/graybox/gb-basic-02.json",
+      "version": "1.0.0"
+    },
+    "tags": [
+      "headers",
+      "basic"
+    ]
+  }
+]
