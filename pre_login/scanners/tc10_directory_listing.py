@@ -25,7 +25,21 @@ from .common import (
 # These are discovery candidates, not guaranteed vulnerabilities.
 # Active candidates are stored in the external, provenance-documented payload library.
 # The sets are curated subsets of SecLists/FuzzDB resource-discovery themes.
-def _directory_candidates(seed: str = "") -> tuple[str, ...]:
+def _directory_candidates(seed: str = "", limit: int | None = 120) -> tuple[str, ...]:
+    from payloads.manager import is_exhaustive_mode
+    if is_exhaustive_mode() and (limit == 120 or limit is None):
+        curated = (
+            load_lines("seclists/discovery/directory_candidates.txt")
+            + load_lines("fuzzdb/discovery/predictable_filepaths_curated.txt")
+        )
+        upstream = (
+            load_optional_lines("upstream/SecLists/Discovery/Web-Content/raft-small-directories.txt")
+            + load_optional_lines("upstream/SecLists/Discovery/Web-Content/api/api-endpoints.txt")
+            + load_optional_lines("upstream/SecLists/Discovery/Web-Content/common.txt")
+            + load_optional_lines("upstream/FuzzDB/discovery/predictable-filepaths/KitchensinkDirectories.txt")
+        )
+        return tuple(dict.fromkeys(curated + upstream))
+
     curated = (
         load_lines("seclists/discovery/directory_candidates.txt", limit=48)
         + load_lines("fuzzdb/discovery/predictable_filepaths_curated.txt", limit=20)
@@ -48,7 +62,8 @@ def _directory_candidates(seed: str = "") -> tuple[str, ...]:
             12, seed=f"{seed}:fuzzdb-dirs"
         )
     )
-    return tuple(dict.fromkeys(curated + upstream))[:120]
+    res = tuple(dict.fromkeys(curated + upstream))
+    return res if limit is None else res[:limit]
 
 
 MAX_DISCOVERED_DIRS = 50
@@ -589,11 +604,15 @@ def scan_directory_listing(
     url: str,
     verify_tls: bool = True,
     timeout: float = 10.0,
+    max_probes: int | None = None,
 ) -> dict:
 
+    from payloads.manager import is_exhaustive_mode
+    exhaustive = is_exhaustive_mode()
     input_target = normalize_url(url)
     base = origin_root_url(input_target)
-    payload_candidates = _directory_candidates(input_target)
+    effective_candidate_limit = max_probes if max_probes is not None else (None if exhaustive else 120)
+    payload_candidates = _directory_candidates(input_target, limit=effective_candidate_limit)
 
     details: dict[str, Any] = {
         "input_target": input_target,
@@ -692,9 +711,10 @@ def scan_directory_listing(
     )
 
     # De-duplicate while preserving order.
+    max_discovered = len(candidates) if exhaustive else MAX_DISCOVERED_DIRS
     candidates = list(
         dict.fromkeys(candidates)
-    )[:MAX_DISCOVERED_DIRS]
+    )[:max_discovered]
 
     details["discovered_directories"] = candidates
 
@@ -705,11 +725,12 @@ def scan_directory_listing(
     findings: list[dict[str, Any]] = []
     tested: list[dict[str, Any]] = []
 
+    effective_max_probes = max_probes if max_probes is not None else (len(candidates) if exhaustive else MAX_PROBES)
     for index, path in enumerate(
         candidates
     ):
 
-        if index >= MAX_PROBES:
+        if index >= effective_max_probes:
             break
 
         target = absolute(

@@ -66,8 +66,13 @@ def run_pre_login_suite(
     verify_tls: bool = True,
     enabled_keys: set[str] | None = None,
     progress: Callable[[str], None] | None = None,
+    exhaustive: bool | None = None,
 ) -> list[dict]:
     """Run the registered 23-test pre-login suite in deterministic order."""
+    if exhaustive is not None:
+        import os
+        os.environ["EXHAUSTIVE_PAYLOADS"] = "1" if exhaustive else "0"
+
     verify_tls, tls_note = effective_verify_tls(target, verify_tls)
     if tls_note and progress:
         progress(tls_note)

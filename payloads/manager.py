@@ -160,7 +160,16 @@ def testcase_payloads(testcase_key: str) -> list[str]:
     return [str(p) for p in spec.get("files", [])]
 
 
-def payload_library_summary() -> dict[str, Any]:
+def is_exhaustive_mode(explicit: bool | None = None) -> bool:
+    """Return whether exhaustive payload testing mode is active."""
+    if explicit is not None:
+        return bool(explicit)
+    import os
+    return os.environ.get("EXHAUSTIVE_PAYLOADS", "0").lower() in {"1", "true", "yes"}
+
+
+def payload_library_summary(exhaustive: bool | None = None) -> dict[str, Any]:
+    use_max = is_exhaustive_mode(exhaustive)
     manifest = _read_manifest()
     testcases: list[dict[str, Any]] = []
     source_names = {
@@ -187,13 +196,15 @@ def payload_library_summary() -> dict[str, Any]:
                     total += len(load_lines(relative))
             except (OSError, ValueError, json.JSONDecodeError):
                 pass
+        max_cap = total if use_max else int(spec.get("max_items", total or 0))
+        exec_mode = "exhaustive_all_inputs" if use_max else str(spec.get("execution", "bounded"))
         testcases.append({
             "testcase": key,
             "label": str(spec.get("label", key)),
             "files": files,
             "item_count": total,
-            "max_items": int(spec.get("max_items", total or 0)),
-            "execution": str(spec.get("execution", "bounded")),
+            "max_items": max_cap,
+            "execution": exec_mode,
             "purpose": str(spec.get("purpose", "")),
         })
     sources = sorted({name for path in active_files for prefix, name in source_names.items() if path.startswith(prefix)})
@@ -204,4 +215,5 @@ def payload_library_summary() -> dict[str, Any]:
         "total_curated_items": sum(item["item_count"] for item in testcases),
         "sources": sources,
         "testcases": testcases,
+        "exhaustive": use_max,
     }

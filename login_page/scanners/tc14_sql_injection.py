@@ -76,8 +76,12 @@ class SQLiConfig:
     random_password: str = ""
 
     def __post_init__(self):
+        from payloads.manager import is_exhaustive_mode
         self.max_targets = max(1, min(int(self.max_targets), 30))
-        self.max_probes_per_target = max(1, min(int(self.max_probes_per_target), 16))
+        if is_exhaustive_mode():
+            self.max_probes_per_target = max(1, int(self.max_probes_per_target))
+        else:
+            self.max_probes_per_target = max(1, min(int(self.max_probes_per_target), 16))
         if not str(self.random_password or "").strip():
             self.random_password = f"Tc14Np{secrets.token_hex(4)}"
 
@@ -396,7 +400,9 @@ def _assess_target(
 ) -> dict[str, Any]:
     evidence: list[str] = []
     findings: list[str] = []
-    probes = list(_probes())[:cfg.max_probes_per_target]
+    from payloads.manager import is_exhaustive_mode
+    all_probes = list(_probes())
+    probes = all_probes if is_exhaustive_mode() else all_probes[:cfg.max_probes_per_target]
     login_url = str((target.get("form") or {}).get("page_url") or target.get("url") or "")
     baseline_username = f"tc14_baseline_{secrets.token_hex(3)}"
     try:

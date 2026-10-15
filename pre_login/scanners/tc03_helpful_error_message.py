@@ -172,7 +172,11 @@ class HelpfulErrorScanner:
     ) -> None:
         self.timeout = max(1.0, float(timeout))
         self.verify_tls = bool(verify_tls)
-        self.max_cases = max(3, min(int(max_cases), 20))
+        from payloads.manager import is_exhaustive_mode
+        if is_exhaustive_mode():
+            self.max_cases = max(3, int(max_cases)) if max_cases != DEFAULT_MAX_CASES else 112
+        else:
+            self.max_cases = max(3, min(int(max_cases), 20))
         self.max_body = max(10_000, min(int(max_body), 1_000_000))
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": user_agent})
@@ -382,6 +386,22 @@ class HelpfulErrorScanner:
                 ))
                 break
 
+        # If higher probe cap requested (e.g. exhaustive mode), populate from FuzzDB error path probes
+        if len(cases) < max_cases:
+            try:
+                extra_probes = load_lines("fuzzdb/response_patterns/error_path_probes.txt")
+                for idx, probe in enumerate(extra_probes):
+                    if len(cases) >= max_cases:
+                        break
+                    probe_clean = "/" + probe.lstrip("/")
+                    cases.append((
+                        f"ERR-FUZZDB-{idx+1:03d}",
+                        f"FuzzDB error path probe: {probe}",
+                        urljoin(base, probe_clean),
+                    ))
+            except Exception:
+                pass
+
         # Deduplicate and respect cap.
         unique: list[tuple[str, str, str]] = []
         seen = set()
@@ -526,10 +546,12 @@ def scan_helpful_error_messages(
     max_cases: int = DEFAULT_MAX_CASES,
 ) -> dict[str, Any]:
     """Convenience wrapper returning a JSON-serializable dictionary."""
+    from payloads.manager import is_exhaustive_mode
+    effective_max = 112 if is_exhaustive_mode() and max_cases == DEFAULT_MAX_CASES else max_cases
     return HelpfulErrorScanner(
         timeout=timeout,
         verify_tls=verify_tls,
-        max_cases=max_cases,
+        max_cases=effective_max,
     ).scan(url).as_dict()
 
 

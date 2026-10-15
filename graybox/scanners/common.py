@@ -45,6 +45,7 @@ class GrayBoxExecutionSession:
         params: dict[str, Any] | None = None,
         data: Any = None,
         json_data: Any = None,
+        json: Any = None,
         cookies: dict[str, str] | None = None,
         allow_redirects: bool = True,
         timeout: float | None = None,
@@ -57,6 +58,7 @@ class GrayBoxExecutionSession:
         timeout = timeout or self.config.timeout_seconds
 
         req_headers = dict(headers or {})
+        effective_json = json if json is not None else json_data
         try:
             resp = self.session.request(
                 method=method.upper(),
@@ -64,7 +66,7 @@ class GrayBoxExecutionSession:
                 headers=req_headers,
                 params=params,
                 data=data,
-                json=json_data,
+                json=effective_json,
                 cookies=cookies,
                 allow_redirects=allow_redirects,
                 timeout=timeout,

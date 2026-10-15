@@ -36,7 +36,8 @@ MAX_SNIPPET_LENGTH = 350
 # nonexistent or malformed paths only.
 # ============================================================
 
-PROBES = tuple(load_lines("fuzzdb/response_patterns/error_path_probes.txt", limit=MAX_PROBES))
+ALL_PROBES = tuple(load_lines("fuzzdb/response_patterns/error_path_probes.txt"))
+PROBES = ALL_PROBES[:MAX_PROBES]
 MAX_FUZZDB_ERROR_SIGNATURES = 100
 FUZZDB_ERROR_SIGNATURES = tuple(
     re.compile(re.escape(item), re.I)
@@ -1288,8 +1289,11 @@ def scan_internal_path_disclosure(
     url: str,
     verify_tls: bool = True,
     timeout: float = 10.0,
+    max_probes: int | None = None,
 ) -> dict:
 
+    from payloads.manager import is_exhaustive_mode
+    exhaustive = is_exhaustive_mode()
     input_target = normalize_url(url)
     base = origin_root_url(input_target)
 
@@ -1305,9 +1309,8 @@ def scan_internal_path_disclosure(
     # Bound probe count.
     # --------------------------------------------------------
 
-    selected_probes = PROBES[
-        :MAX_PROBES
-    ]
+    effective_max = max_probes if max_probes is not None else (len(ALL_PROBES) if exhaustive else MAX_PROBES)
+    selected_probes = ALL_PROBES[:effective_max]
 
     # --------------------------------------------------------
     # Execute probes
@@ -1648,7 +1651,7 @@ def scan_internal_path_disclosure(
         "limits": {
             "max_redirects": MAX_REDIRECTS,
             "max_body_bytes": MAX_BODY_BYTES,
-            "max_probes": MAX_PROBES,
+            "max_probes": len(selected_probes),
             "max_evidence_items": (
                 MAX_EVIDENCE_ITEMS
             ),

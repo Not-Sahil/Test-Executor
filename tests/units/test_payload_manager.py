@@ -78,3 +78,29 @@ def test_fuzzdb_response_error_dictionary_is_vendored_and_loaded():
     assert "MySQL Error" in entries
     assert "ORA-0" in entries
     assert "PostgreSQL query failed: ERROR: parser: parse error" in entries
+
+
+def test_exhaustive_mode_sets_maximum_caps():
+    summary_bounded = payload_library_summary(exhaustive=False)
+    summary_max = payload_library_summary(exhaustive=True)
+
+    bounded_map = {item["testcase"]: item["max_items"] for item in summary_bounded["testcases"]}
+    max_map = {item["testcase"]: item["max_items"] for item in summary_max["testcases"]}
+    count_map = {item["testcase"]: item["item_count"] for item in summary_max["testcases"]}
+
+    # In exhaustive mode, every testcase probe cap equals its total payload input count
+    for tc_key in max_map:
+        assert max_map[tc_key] == count_map[tc_key]
+
+    assert max_map["tc03_helpful_error_message"] == count_map["tc03_helpful_error_message"] == 112
+    assert max_map["tc10_directory_listing"] == count_map["tc10_directory_listing"] == 27569
+    assert max_map["tc13_sensitive_file_exposure"] == count_map["tc13_sensitive_file_exposure"] == 16274
+    assert max_map["tc23_internal_path_disclosure"] == count_map["tc23_internal_path_disclosure"] == 112
+    assert max_map["tc14_sql_injection"] == count_map["tc14_sql_injection"] == 12
+
+    # In bounded mode, bounded limits from manifest are preserved
+    assert bounded_map["tc03_helpful_error_message"] == 10
+    assert bounded_map["tc10_directory_listing"] == 120
+    assert bounded_map["tc13_sensitive_file_exposure"] == 100
+    assert bounded_map["tc23_internal_path_disclosure"] == 16
+    assert bounded_map["tc14_sql_injection"] == 8

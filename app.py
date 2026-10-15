@@ -807,7 +807,7 @@ def render_combined_report(
     # Curated, file-backed payload transparency for reviewers and clients.
     with st.expander("Payload Library & CVSS v4.0", expanded=False):
         try:
-            library = payload_library_summary()
+            library = payload_library_summary(exhaustive=st.session_state.get("exhaustive_probes"))
             st.caption(
                 "Payload sources are curated subsets with provenance recorded in payloads/SOURCES_AND_LICENSES.md. "
                 "Header, TLS, certificate and browser-observation tests correctly use protocol/browser evidence instead of payload lists."
@@ -1870,6 +1870,53 @@ if not allow_private_targets:
         "Private and loopback target addresses are blocked. Only public targets are permitted."
     )
 
+# ==============================================================
+# PROBE CAP & PAYLOAD EXECUTION CONFIGURATION
+# ==============================================================
+
+exhaustive_probes = st.checkbox(
+    "Exhaustive Probe Mode (Test all available payloads at maximum cap)",
+    value=st.session_state.get("exhaustive_probes", False),
+    key="app_exhaustive_probes_toggle",
+    help=(
+        "When enabled, the executor lifts all bounded probe caps across testcases to test "
+        "every available payload input (including all ~44,000+ directory and sensitive file candidates, "
+        "all 112 error path probes, and full differential SQL injection suites). "
+        "Keep unchecked for fast, bounded assessments."
+    ),
+)
+st.session_state["exhaustive_probes"] = exhaustive_probes
+if exhaustive_probes:
+    import os
+    os.environ["EXHAUSTIVE_PAYLOADS"] = "1"
+    st.warning(
+        "⚠️ **Exhaustive Probe Mode is active**: Scanners will test all payload inputs without bounded limits. "
+        "Assessments against remote targets may take significantly longer due to the large payload volume."
+    )
+else:
+    import os
+    os.environ["EXHAUSTIVE_PAYLOADS"] = "0"
+
+with st.expander("Curated Payload Library & Probe Caps Preview", expanded=False):
+    try:
+        preview_lib = payload_library_summary(exhaustive=exhaustive_probes)
+        st.caption(
+            "Current probe limits per testcase. Toggle 'Exhaustive Probe Mode' above to switch between bounded caps and maximum payload testing."
+        )
+        preview_rows = []
+        for item in preview_lib.get("testcases", []):
+            preview_rows.append({
+                "Testcase": item.get("label", item.get("testcase")),
+                "Payload inputs": item.get("item_count", 0),
+                "Probe cap": item.get("max_items", 0),
+                "Execution mode": item.get("execution", "bounded"),
+                "Files": ", ".join(item.get("files", [])),
+            })
+        if preview_rows:
+            st.dataframe(preview_rows, use_container_width=True, hide_index=True)
+    except Exception as lib_exc:
+        st.caption(f"Payload library preview unavailable: {lib_exc}")
+
 
 # ==============================================================
 # AUTHORIZED CREDENTIAL INPUTS
@@ -1999,6 +2046,7 @@ if st.button(
                 target_url,
                 verify_tls=verify_tls,
                 progress=progress,
+                exhaustive=bool(exhaustive_probes),
             )
 
             results = []

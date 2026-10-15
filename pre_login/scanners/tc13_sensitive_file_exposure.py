@@ -32,8 +32,21 @@ MAX_TEXT_CHARS = 80_000
 # Directly interesting resources
 # ============================================================================
 
-def _direct_probes(seed: str = "") -> tuple[str, ...]:
+def _direct_probes(seed: str = "", limit: int | None = 60) -> tuple[str, ...]:
     """Combine sensitive-file sources without always selecting the wordlist head."""
+    from payloads.manager import is_exhaustive_mode
+    if is_exhaustive_mode() and (limit == 60 or limit is None):
+        curated = (
+            load_lines("seclists/discovery/sensitive_file_candidates.txt")
+            + load_lines("fuzzdb/discovery/predictable_filepaths_curated.txt")
+        )
+        upstream = (
+            load_optional_lines("upstream/SecLists/Discovery/Web-Content/common.txt")
+            + load_optional_lines("upstream/SecLists/Discovery/Web-Content/raft-small-files.txt")
+            + load_optional_lines("upstream/FuzzDB/discovery/predictable-filepaths/Randomfiles.txt")
+        )
+        return tuple(dict.fromkeys(curated + upstream))
+
     upstream = (
         load_optional_sample(
             "upstream/SecLists/Discovery/Web-Content/common.txt",
@@ -55,7 +68,8 @@ def _direct_probes(seed: str = "") -> tuple[str, ...]:
         load_lines("seclists/discovery/sensitive_file_candidates.txt", limit=40)
         + load_lines("fuzzdb/discovery/predictable_filepaths_curated.txt", limit=20)
     )
-    return tuple(dict.fromkeys(curated + upstream))
+    res = tuple(dict.fromkeys(curated + upstream))
+    return res if limit is None else res[:limit]
 
 
 # Backup/source variants are file-backed so the scanner contains no embedded
@@ -63,16 +77,28 @@ def _direct_probes(seed: str = "") -> tuple[str, ...]:
 BACKUP_SUFFIXES = tuple(load_lines("seclists/discovery/backup_suffixes.txt", limit=10))
 SOURCE_CONFIG_BASES = tuple(load_lines("seclists/discovery/source_config_bases.txt", limit=20))
 
-def _build_probe_list(seed: str = "") -> list[str]:
-    probes = list(_direct_probes(seed))
+def _build_probe_list(seed: str = "", limit: int | None = MAX_PROBES) -> list[str]:
+    from payloads.manager import is_exhaustive_mode
+    exhaustive = is_exhaustive_mode()
+    probes = list(_direct_probes(seed, limit=None if exhaustive else limit))
 
-    for base in SOURCE_CONFIG_BASES:
-        for suffix in BACKUP_SUFFIXES:
+    if exhaustive:
+        backup_suffixes = tuple(load_lines("seclists/discovery/backup_suffixes.txt"))
+        source_config_bases = tuple(load_lines("seclists/discovery/source_config_bases.txt"))
+    else:
+        backup_suffixes = BACKUP_SUFFIXES
+        source_config_bases = SOURCE_CONFIG_BASES
+
+    for base in source_config_bases:
+        for suffix in backup_suffixes:
             probes.append(
                 f"{base}{suffix}"
             )
 
-    return list(dict.fromkeys(probes))[:MAX_PROBES]
+    unique = list(dict.fromkeys(probes))
+    if exhaustive and (limit == MAX_PROBES or limit is None):
+        return unique
+    return unique[:limit] if limit is not None else unique
 
 
 # ============================================================================
@@ -753,6 +779,7 @@ def scan_sensitive_file_exposure(
     verify_tls: bool = True,
     timeout: float = 10.0,
     max_file_bytes: int = MAX_BODY_BYTES,
+    max_probes: int | None = None,
 ) -> dict:
     """
     TC13 - Sensitive File Exposure
@@ -771,10 +798,13 @@ def scan_sensitive_file_exposure(
         - Never stores actual detected secret values in evidence.
     """
 
+    from payloads.manager import is_exhaustive_mode
+    exhaustive = is_exhaustive_mode()
     input_target = normalize_url(url)
     base = origin_root_url(input_target)
 
-    probes = _build_probe_list(base)
+    effective_limit = max_probes if max_probes is not None else (None if exhaustive else MAX_PROBES)
+    probes = _build_probe_list(base, limit=effective_limit)
 
     details: dict[str, Any] = {
         "input_target": input_target,
@@ -786,10 +816,10 @@ def scan_sensitive_file_exposure(
             "sources": ["SecLists (curated subset)", "FuzzDB (curated subset)"],
             "files": ["payloads/seclists/discovery/sensitive_file_candidates.txt", "payloads/seclists/discovery/source_config_bases.txt", "payloads/seclists/discovery/backup_suffixes.txt", "payloads/fuzzdb/discovery/predictable_filepaths_curated.txt"],
             "optional_upstream_files": ["payloads/upstream/SecLists/Discovery/Web-Content/common.txt", "payloads/upstream/FuzzDB/discovery/predictable-filepaths/Randomfiles.txt"],
-            "max_probes": MAX_PROBES,
+            "max_probes": len(probes) if exhaustive else MAX_PROBES,
         },
         "limits": {
-            "max_probes": MAX_PROBES,
+            "max_probes": len(probes) if exhaustive else MAX_PROBES,
             "max_file_bytes": max_file_bytes,
         },
     }
