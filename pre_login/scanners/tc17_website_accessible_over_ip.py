@@ -292,12 +292,10 @@ def _requests_request(
     parsed = urlparse(url)
     headers = {"User-Agent": "SecurityAssessmentTestExecutor-TC17/1.0"}
     target = url
+    effective_port = parsed.port or (443 if parsed.scheme == "https" else 80)
     if connect_ip and hostname:
-        netloc = connect_ip
-        if parsed.port:
-            netloc = f"{connect_ip}:{parsed.port}"
-        elif ":" in connect_ip and not connect_ip.startswith("["):
-            netloc = f"[{connect_ip}]"
+        clean_ip = connect_ip.strip("[]")
+        netloc = f"[{clean_ip}]:{effective_port}" if ":" in clean_ip else f"{clean_ip}:{effective_port}"
         target = parsed._replace(netloc=netloc).geturl()
         headers["Host"] = hostname if not parsed.port else f"{hostname}:{parsed.port}"
 
@@ -355,23 +353,25 @@ def _curl_request(
     parsed = urlparse(
         url
     )
+    effective_port = parsed.port or (
+        443 if parsed.scheme == "https" else 80
+    )
 
     if (
         connect_ip
         and hostname
-        and parsed.port
         and parsed.scheme in {
             "http",
             "https",
         }
     ):
-
+        clean_ip = connect_ip.strip("[]")
         command[1:1] = [
             "--resolve",
             (
                 f"{hostname}:"
-                f"{parsed.port}:"
-                f"{connect_ip}"
+                f"{effective_port}:"
+                f"{clean_ip}"
             ),
         ]
 
@@ -886,41 +886,30 @@ def scan_ip_access(
     # 3. Test each resolved IP
     # ========================================================================
 
-    address_results: list[
-        dict[str, Any]
-    ] = []
-
-    strong_candidates: list[
-        dict[str, Any]
-    ] = []
+    address_results: list[dict[str, Any]] = []
+    direct_application_exposures: list[dict[str, Any]] = []
+    forced_candidates: list[dict[str, Any]] = []
+    canonical_redirects: list[dict[str, Any]] = []
+    default_vhosts: list[dict[str, Any]] = []
+    sensitive_exposures: list[dict[str, Any]] = []
+    restricted_ips: list[dict[str, Any]] = []
 
     completed = 0
 
     for address in addresses:
-
-        # --------------------------------------------------------------
-        # A. Raw direct-IP URL
-        # --------------------------------------------------------------
-
-        raw_ip_url = (
-            f"{scheme}://"
-            f"{address}"
-            + (
-                f":{port}"
-                if parsed.port
-                else ""
-            )
-            + (
-                parsed.path
-                or "/"
-            )
-        )
+        clean_ip = address.strip("[]")
+        formatted_address = f"[{clean_ip}]" if ":" in clean_ip else clean_ip
+        port_suffix = f":{port}" if parsed.port or (port != (443 if scheme == "https" else 80)) else ""
+        raw_ip_url = f"{scheme}://{formatted_address}{port_suffix}{parsed.path or '/'}"
 
         raw_ip_result: dict[str, Any] = {
             "address": address,
             "raw_ip_url": raw_ip_url,
         }
 
+        # --------------------------------------------------------------
+        # A. Raw direct-IP URL
+        # --------------------------------------------------------------
         raw_ip, raw_ip_error = _curl_request(
             raw_ip_url,
             timeout=int(timeout),
@@ -928,231 +917,219 @@ def scan_ip_access(
         )
 
         if raw_ip:
-
             try:
-
                 raw_snapshot = _build_snapshot(
                     raw_ip,
                     url=raw_ip_url,
                     address=address,
                 )
-
-                raw_ip_result[
-                    "response"
-                ] = raw_snapshot.as_dict()
-
-                raw_comparison = (
-                    _snapshot_comparison(
-                        domain_snapshot,
-                        raw_snapshot,
-                    )
-                )
-
-                raw_ip_result[
-                    "comparison"
-                ] = raw_comparison
-
+                raw_ip_result["response"] = raw_snapshot.as_dict()
+                raw_comparison = _snapshot_comparison(domain_snapshot, raw_snapshot)
+                raw_ip_result["comparison"] = raw_comparison
                 completed += 1
 
+                raw_status = raw_snapshot.status_code or 0
+                similarity = raw_comparison.get("body_similarity_percent", 0.0)
+                signals = raw_comparison.get("matching_application_signals", 0)
+
+                # 1. Canonical redirect
+                if 300 <= raw_status < 400 and (raw_snapshot.location or ""):
+                    loc = raw_snapshot.location.lower()
+                    if hostname.lower() in loc:
+                        canonical_redirects.append({
+                            "address": address,
+                            "status_code": raw_status,
+                            "location": raw_snapshot.location,
+                        })
+
+                # 2. Direct raw IP serves target application
+                elif 200 <= raw_status < 300 and similarity >= 80 and signals >= 3:
+                    direct_application_exposures.append({
+                        "address": address,
+                        "url": raw_ip_url,
+                        "status_code": raw_status,
+                        "similarity": similarity,
+                        "signals": signals,
+                        "title": raw_snapshot.title,
+                    })
+
+                # 3. Direct raw IP exposes sensitive/admin interface
+                elif 200 <= raw_status < 300 and any(
+                    ind in (raw_snapshot.title or "").lower() or ind in (raw_snapshot.body or "")[:5000].lower()
+                    for ind in ("phpmyadmin", "admin panel", "cpanel", "webmin", "dashboard", "index of /")
+                ) and similarity < 50:
+                    sensitive_exposures.append({
+                        "address": address,
+                        "url": raw_ip_url,
+                        "status_code": raw_status,
+                        "title": raw_snapshot.title,
+                    })
+
+                # 4. Default virtual host page
+                elif 200 <= raw_status < 300 and (
+                    any(ind in (raw_snapshot.title or "").lower() for ind in ("welcome to", "apache2 default", "iis windows", "nginx default"))
+                    or (similarity < 25 and any(ind in raw_snapshot.body.lower() for ind in ("default page", "welcome to", "it works!")))
+                ):
+                    default_vhosts.append({
+                        "address": address,
+                        "url": raw_ip_url,
+                        "status_code": raw_status,
+                        "title": raw_snapshot.title,
+                    })
+
+                # 5. Explicitly restricted status
+                elif raw_status in {401, 403, 404, 410}:
+                    restricted_ips.append({
+                        "address": address,
+                        "status_code": raw_status,
+                    })
+
             except Exception as exc:
-
-                raw_ip_result[
-                    "parse_error"
-                ] = str(exc)
-
+                raw_ip_result["parse_error"] = str(exc)
         else:
-
-            raw_ip_result[
-                "error"
-            ] = raw_ip_error
+            raw_ip_result["error"] = raw_ip_error
+            if raw_ip_error and any(token in raw_ip_error.lower() for token in ("refused", "timeout", "timed out", "unreachable", "reset")):
+                restricted_ips.append({
+                    "address": address,
+                    "error": raw_ip_error,
+                })
 
         # --------------------------------------------------------------
         # B. Hostname-preserving forced-IP request
-        #
-        # This is the important test, especially for HTTPS.
         # --------------------------------------------------------------
-
-        forced_raw, forced_error = (
-            _curl_request(
-                target,
-                connect_ip=address,
-                hostname=hostname,
-                timeout=int(timeout),
-                verify_tls=verify_tls,
-            )
+        forced_raw, forced_error = _curl_request(
+            target,
+            connect_ip=address,
+            hostname=hostname,
+            timeout=int(timeout),
+            verify_tls=verify_tls,
         )
 
         if forced_raw:
-
             try:
-
-                forced_snapshot = (
-                    _build_snapshot(
-                        forced_raw,
-                        url=target,
-                        address=address,
-                    )
+                forced_snapshot = _build_snapshot(
+                    forced_raw,
+                    url=target,
+                    address=address,
                 )
-
-                raw_ip_result[
-                    "forced_hostname_response"
-                ] = (
-                    forced_snapshot.as_dict()
-                )
-
-                forced_comparison = (
-                    _snapshot_comparison(
-                        domain_snapshot,
-                        forced_snapshot,
-                    )
-                )
-
-                raw_ip_result[
-                    "forced_hostname_comparison"
-                ] = (
-                    forced_comparison
-                )
-
-                # This is much stronger than raw-IP HTTP access because the
-                # original hostname is retained for Host/SNI.
-                if (
-                    forced_snapshot.status_code
-                    and 200
-                    <= forced_snapshot.status_code
-                    < 300
-                ):
-
-                    similarity = (
-                        forced_comparison[
-                            "body_similarity_percent"
-                        ]
-                    )
-
-                    signals = (
-                        forced_comparison[
-                            "matching_application_signals"
-                        ]
-                    )
-
-                    if (
-                        similarity >= 85
-                        and signals >= 3
-                    ):
-
-                        strong_candidates.append(
-                            {
-                                "address": address,
-                                "similarity": similarity,
-                                "signals": signals,
-                                "response": (
-                                    forced_snapshot
-                                    .as_dict()
-                                ),
-                            }
-                        )
-
+                raw_ip_result["forced_hostname_response"] = forced_snapshot.as_dict()
+                forced_comparison = _snapshot_comparison(domain_snapshot, forced_snapshot)
+                raw_ip_result["forced_hostname_comparison"] = forced_comparison
                 completed += 1
 
+                forced_status = forced_snapshot.status_code or 0
+                forced_sim = forced_comparison.get("body_similarity_percent", 0.0)
+                forced_sig = forced_comparison.get("matching_application_signals", 0)
+
+                if 200 <= forced_status < 300 and forced_sim >= 80 and forced_sig >= 3:
+                    forced_candidates.append({
+                        "address": address,
+                        "similarity": forced_sim,
+                        "signals": forced_sig,
+                        "status_code": forced_status,
+                        "response": forced_snapshot.as_dict(),
+                    })
             except Exception as exc:
-
-                raw_ip_result[
-                    "forced_parse_error"
-                ] = str(exc)
-
+                raw_ip_result["forced_parse_error"] = str(exc)
         else:
+            raw_ip_result["forced_hostname_error"] = forced_error
 
-            raw_ip_result[
-                "forced_hostname_error"
-            ] = forced_error
+        address_results.append(raw_ip_result)
 
-        address_results.append(
-            raw_ip_result
-        )
-
-    details[
-        "ip_tests"
-    ] = address_results
-
-    details[
-        "successful_ip_tests"
-    ] = completed
-
-    details[
-        "strong_direct_application_candidates"
-    ] = strong_candidates
+    details["ip_tests"] = address_results
+    details["successful_ip_tests"] = completed
+    details["direct_application_exposures"] = direct_application_exposures
+    details["forced_candidates"] = forced_candidates
+    details["canonical_redirects"] = canonical_redirects
+    details["default_vhosts"] = default_vhosts
+    details["sensitive_exposures"] = sensitive_exposures
+    details["restricted_ips"] = restricted_ips
 
     # ========================================================================
     # 4. Final classification
     # ========================================================================
 
-    if strong_candidates:
-
-        details["security_bypass_confirmed"] = False
+    # A. Direct application exposure over raw IP (without Host header)
+    if direct_application_exposures:
+        details["security_bypass_confirmed"] = True
         details["direct_application_reachability_confirmed"] = True
-        details["assessment_state"] = "ARCHITECTURE_REVIEW"
-
-        evidence = []
-
-        for candidate in strong_candidates:
-
-            evidence.append(
-                (
-                    f"{candidate['address']} accepted "
-                    f"the original hostname while "
-                    f"returning application-like content "
-                    f"({candidate['similarity']}% similarity)."
-                )
-            )
-
+        evidence = [
+            f"Direct IP {item['address']} served the intended application directly ({item['similarity']}% similarity, {item['signals']}/4 signals)."
+            for item in direct_application_exposures
+        ]
         return _result(
-            "REVIEW REQUIRED",
-            "A resolved IP address can serve the target application when the original hostname is preserved. This confirms direct application reachability, but does not by itself prove a security bypass; manual architecture review is required to determine whether the address exposes an origin that should be shielded by CDN, WAF, reverse-proxy, or network controls.",
+            "UNSAFE",
+            "The web application is directly accessible via its public IP address without virtual-host or domain routing. This confirms origin exposure and potential bypass of fronting CDN, WAF, or access controls.",
             details,
             evidence,
         )
 
-    if completed == 0:
-
+    # B. Direct IP exposes sensitive secondary application / interface
+    if sensitive_exposures:
+        details["sensitive_exposure_confirmed"] = True
+        evidence = [
+            f"Direct IP {item['address']} exposed secondary interface: {item['title']} (HTTP {item['status_code']})."
+            for item in sensitive_exposures
+        ]
         return _result(
-            "INCOMPLETE",
-            "None of the resolved IP addresses could be tested successfully.",
+            "UNSAFE",
+            "Direct IP access exposes an administrative or secondary application interface on the server.",
             details,
+            evidence,
         )
 
-    # Check whether any IP simply returned an unrelated/default response.
-    any_successful_raw = any(
-        (
-            test.get(
-                "response",
-                {},
-            ).get(
-                "status_code"
-            )
-            and 200
-            <= test[
-                "response"
-            ][
-                "status_code"
-            ]
-            < 300
-        )
-        for test in address_results
-    )
-
-    if any_successful_raw:
+    # C. Hostname-preserving forced IP access
+    if forced_candidates:
         details["security_bypass_confirmed"] = False
-        details["direct_application_reachability_confirmed"] = False
-        details["assessment_state"] = "NO_MATCHING_APPLICATION_EVIDENCE"
+        details["direct_application_reachability_confirmed"] = True
+        evidence = [
+            f"IP {candidate['address']} served the application when Host header {hostname!r} was provided ({candidate['similarity']}% similarity)."
+            for candidate in forced_candidates
+        ]
+        return _result(
+            "REVIEW REQUIRED",
+            "A resolved IP address serves the application when the original hostname is preserved. Direct origin reachability is confirmed; review whether this IP allows bypassing CDN, WAF, or network restrictions.",
+            details,
+            evidence,
+        )
 
+    # D. Canonical redirect
+    if canonical_redirects and not direct_application_exposures and not forced_candidates:
+        evidence = [
+            f"IP {item['address']} redirects (HTTP {item['status_code']}) to {item['location']}."
+            for item in canonical_redirects
+        ]
         return _result(
             "SAFE",
-            "One or more resolved IP addresses responded, but the scanner did not confirm that the target application was directly exposed through those addresses.",
+            "Direct IP access safely redirects clients back to the intended canonical hostname.",
+            details,
+            evidence,
+        )
+
+    # E. Default virtual host
+    if default_vhosts and not direct_application_exposures and not forced_candidates:
+        evidence = [
+            f"IP {item['address']} served default virtual host page: {item['title']!r}."
+            for item in default_vhosts
+        ]
+        return _result(
+            "SAFE",
+            "Direct IP access serves a default server or virtual-host page rather than the application.",
+            details,
+            evidence,
+        )
+
+    # F. Correctly restricted access
+    if restricted_ips or completed > 0:
+        return _result(
+            "SAFE",
+            "Direct IP access to the application is restricted, blocked, or not exposed across the resolved addresses.",
             details,
         )
 
     return _result(
-        "SAFE",
-        "No direct-IP access to the target application was confirmed by the bounded IPv4/IPv6 and hostname-preserving IP tests.",
+        "INCOMPLETE",
+        "None of the resolved IP addresses could be assessed reliably due to network or connection errors.",
         details,
     )
 

@@ -22,4 +22,11 @@ PRE_LOGIN_TESTS = [
     ("tc21_crossdomain_xml", "Crossdomain.xml", "pre_login.scanners.tc21_crossdomain_xml"),
     ("tc22_application_running_on_http", "Application Running on HTTP", "pre_login.scanners.tc22_application_running_on_http"),
     ("tc23_internal_path_disclosure", "Internal Path Disclosure", "pre_login.scanners.tc23_internal_path_disclosure"),
+    ("tc24_boolean_sql_injection", "Boolean-Based SQL Injection", "pre_login.scanners.tc24_boolean_sql_injection"),
+    ("tc25_time_based_sql_injection", "Time-Based SQL Injection", "pre_login.scanners.tc25_time_based_sql_injection"),
+    ("tc26_blind_sql_injection", "Blind SQL Injection", "pre_login.scanners.tc26_blind_sql_injection"),
+    ("tc27_union_sql_injection", "UNION-Based SQL Injection", "pre_login.scanners.tc27_union_sql_injection"),
+    ("tc28_poor_input_validation", "Poor Input Validation", "pre_login.scanners.tc28_poor_input_validation"),
+    ("tc29_sensitive_information_disclosure", "Application Discloses Sensitive Information", "pre_login.scanners.tc29_sensitive_information_disclosure"),
+    ("tc30_prototype_pollution_dom_xss", "Prototype Pollution Leading to DOM-Based XSS", "pre_login.scanners.tc30_prototype_pollution_dom_xss"),
 ]

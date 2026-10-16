@@ -94,6 +94,69 @@
       "purpose": "Synthetic LDAP metacharacter markers; deliberately excludes known authentication-bypass predicates",
       "max_items": 5,
       "execution": "bounded_login_form_probe_no_credential_spraying"
+    },
+    "tc24_boolean_sql_injection": {
+      "label": "Boolean-Based SQL Injection",
+      "files": [
+        "payloads_all_the_things/sql_injection/boolean_differential_probes.json"
+      ],
+      "purpose": "Paired TRUE/FALSE differential condition probes for boolean-based SQL injection detection",
+      "max_items": 10,
+      "execution": "paired_differential_get_post"
+    },
+    "tc25_time_based_sql_injection": {
+      "label": "Time-Based SQL Injection",
+      "files": [
+        "payloads_all_the_things/sql_injection/time_delay_probes.json"
+      ],
+      "purpose": "Bounded timing delay probes to detect SQL-dependent execution latency",
+      "max_items": 6,
+      "execution": "bounded_timing_delay"
+    },
+    "tc26_blind_sql_injection": {
+      "label": "Blind SQL Injection",
+      "files": [
+        "payloads_all_the_things/sql_injection/blind_sqli_scenarios.json"
+      ],
+      "purpose": "Inference-based SQL injection probes when direct error or data exposure is absent",
+      "max_items": 6,
+      "execution": "blind_differential_inference"
+    },
+    "tc27_union_sql_injection": {
+      "label": "UNION-Based SQL Injection",
+      "files": [
+        "payloads_all_the_things/sql_injection/union_probes.json"
+      ],
+      "purpose": "Controlled canary and column-boundary probes to detect UNION-based SQL injection",
+      "max_items": 8,
+      "execution": "canary_union_probes"
+    },
+    "tc28_poor_input_validation": {
+      "label": "Poor Input Validation",
+      "files": [
+        "fuzzdb/input_validation/validation_scenarios.json"
+      ],
+      "purpose": "Safe, bounded malformed input variations to test server-side validation and exception handling",
+      "max_items": 10,
+      "execution": "bounded_validation_scenarios"
+    },
+    "tc29_sensitive_information_disclosure": {
+      "label": "Application Discloses Sensitive Information",
+      "files": [
+        "fuzzdb/response_patterns/sensitive_disclosure_signatures.json"
+      ],
+      "purpose": "Signatures and patterns to identify exposure of sensitive configuration, errors, credentials, and paths",
+      "max_items": 12,
+      "execution": "passive_and_error_response_inspection"
+    },
+    "tc30_prototype_pollution_dom_xss": {
+      "label": "Prototype Pollution Leading to DOM-Based XSS",
+      "files": [
+        "payloads_all_the_things/prototype_pollution/dom_xss_scenarios.json"
+      ],
+      "purpose": "Harmless canary markers and script analysis to detect prototype pollution and dangerous DOM sinks",
+      "max_items": 6,
+      "execution": "canary_property_and_dom_sink_analysis"
     }
   }
 }

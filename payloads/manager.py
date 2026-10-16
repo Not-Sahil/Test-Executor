@@ -142,9 +142,12 @@ def load_json_records(relative_path: str, limit: int | None = None) -> list[dict
     records: list[dict[str, Any]] = []
     seen: set[tuple[str, str]] = set()
     for item in parsed:
-        if not isinstance(item, dict) or not item.get("value"):
+        if not isinstance(item, dict):
             continue
-        key = (str(item.get("name", "")), str(item["value"]))
+        ident = item.get("value") or item.get("pattern") or item.get("payload_query") or item.get("name")
+        if not ident:
+            continue
+        key = (str(item.get("name", "")), str(ident))
         if key in seen:
             continue
         seen.add(key)

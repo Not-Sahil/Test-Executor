@@ -9,11 +9,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 
 def test_blackbox_prelogin_inventory_unchanged():
-    assert len(PRE_LOGIN_TESTS) == 23, f"Expected 23 Pre-Login testcases, found {len(PRE_LOGIN_TESTS)}"
+    assert len(PRE_LOGIN_TESTS) == 30, f"Expected 30 Pre-Login testcases, found {len(PRE_LOGIN_TESTS)}"
     keys = [item[0] for item in PRE_LOGIN_TESTS]
     assert "tc01_banner_grabbing" in keys
     assert "tc18_missing_security_headers" in keys
     assert "tc23_internal_path_disclosure" in keys
+    assert "tc24_boolean_sql_injection" in keys
+    assert "tc27_union_sql_injection" in keys
+    assert "tc30_prototype_pollution_dom_xss" in keys
 
 
 def test_blackbox_login_page_inventory_unchanged():

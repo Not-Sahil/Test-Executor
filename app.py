@@ -36,7 +36,7 @@ from core.assessment_orchestrator import (
     overall_status,
     ScanResult,
 )
-from pre_login.runner import run_pre_login_suite
+from pre_login.runner import run_pre_login_suite, PRE_LOGIN_TESTS
 from login_page.registry import LOGIN_PAGE_TESTS as LOGIN_PAGE_REGISTRY
 
 from authentication.captcha_human import (
@@ -1802,12 +1802,13 @@ if testing_mode == "GRAY BOX TESTING":
 # ==============================================================
 
 st.header("0. Assessment Suite")
+pre_login_label = f"Pre-Login Tests ({len(PRE_LOGIN_TESTS)})"
 assessment_suite = st.radio(
     "Choose assessment suite",
-    ("Pre-Login Tests (23)", "Login Page Tests (17)"),
+    (pre_login_label, "Login Page Tests (17)"),
     index=0,
     horizontal=True,
-    help="Run the 23 pre-login scanners or the integrated 17-test login-page suite.",
+    help=f"Run the {len(PRE_LOGIN_TESTS)} pre-login scanners or the integrated 17-test login-page suite.",
 )
 
 st.header("1. Target")
@@ -2037,10 +2038,10 @@ if st.button(
 
     try:
         # --------------------------------------------------------------
-        # PRE-LOGIN SUITE — existing 23-test workflow
+        # PRE-LOGIN SUITE — workflow
         # --------------------------------------------------------------
         if assessment_suite.startswith("Pre-Login"):
-            progress("Running Pre-Login Assessment (23 test cases)")
+            progress(f"Running Pre-Login Assessment ({len(PRE_LOGIN_TESTS)} test cases)")
 
             pre_login_payloads = run_pre_login_suite(
                 target_url,
@@ -2064,7 +2065,7 @@ if st.button(
             _finish_scan()
 
             status_box.update(
-                label="All 23 pre-login security tests completed.",
+                label=f"All {len(pre_login_payloads)} pre-login security tests completed.",
                 state="complete",
                 expanded=False,
             )

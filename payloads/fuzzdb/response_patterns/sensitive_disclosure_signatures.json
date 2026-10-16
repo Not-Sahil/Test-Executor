@@ -1,0 +1,86 @@
+[
+  {
+    "name": "python_stack_trace",
+    "pattern": "Traceback \\(most recent call last\\):",
+    "category": "stack_trace",
+    "severity": "high",
+    "description": "Python unhandled exception traceback"
+  },
+  {
+    "name": "java_stack_trace",
+    "pattern": "(?:Exception in thread \"[^\"]+\"|java\\.lang\\.[A-Za-z]+Exception|at [a-zA-Z0-9_.]+\\([A-Za-z0-9_]+\\.java:\\d+\\))",
+    "category": "stack_trace",
+    "severity": "high",
+    "description": "Java stack trace disclosure"
+  },
+  {
+    "name": "php_fatal_error",
+    "pattern": "(?:Fatal error:|Warning:|Parse error:)[^\\n]+on line \\d+",
+    "category": "stack_trace",
+    "severity": "medium",
+    "description": "PHP fatal/parse error with line numbers"
+  },
+  {
+    "name": "dotnet_stack_trace",
+    "pattern": "(?:System\\.[A-Za-z]+Exception:|at System\\.[^\\n]+in [^\\n]+:line \\d+|Server Error in '/' Application)",
+    "category": "stack_trace",
+    "severity": "high",
+    "description": ".NET unhandled exception / yellow screen of death"
+  },
+  {
+    "name": "node_stack_trace",
+    "pattern": "(?:ReferenceError|TypeError|SyntaxError):[^\\n]+\\n\\s+at [^\\n]+:\\d+:\\d+",
+    "category": "stack_trace",
+    "severity": "high",
+    "description": "Node.js runtime stack trace"
+  },
+  {
+    "name": "rsa_private_key",
+    "pattern": "-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----",
+    "category": "credential_leak",
+    "severity": "critical",
+    "description": "Private cryptographic key exposure"
+  },
+  {
+    "name": "aws_access_key",
+    "pattern": "\\b(?:AKIA|ABIA|ACCA|ASIA)[0-9A-Z]{16}\\b",
+    "category": "credential_leak",
+    "severity": "critical",
+    "description": "AWS access key identifier"
+  },
+  {
+    "name": "generic_api_secret",
+    "pattern": "(?i)(?:api[_-]?key|secret[_-]?key|app[_-]?secret)\\s*[:=]\\s*['\"][0-9a-zA-Z\\-_]{16,}['\"]",
+    "category": "credential_leak",
+    "severity": "high",
+    "description": "Hardcoded API secret token"
+  },
+  {
+    "name": "internal_filesystem_path_linux",
+    "pattern": "(?:/var/www/|/home/[a-z0-9_]+/|/etc/(?:passwd|shadow|hosts)|/usr/local/[a-z0-9_]+/)",
+    "category": "internal_path",
+    "severity": "medium",
+    "description": "Internal Linux filesystem path disclosure"
+  },
+  {
+    "name": "internal_filesystem_path_windows",
+    "pattern": "(?i)[c-z]:\\\\(?:inetpub|users|xampp|windows\\\\system32)\\\\",
+    "category": "internal_path",
+    "severity": "medium",
+    "description": "Internal Windows filesystem path disclosure"
+  },
+  {
+    "name": "private_ipv4_disclosure",
+    "pattern": "\\b(?:10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|172\\.(?:1[6-9]|2[0-9]|3[01])\\.\\d{1,3}\\.\\d{1,3}|192\\.168\\.\\d{1,3}\\.\\d{1,3})\\b",
+    "category": "private_infrastructure",
+    "severity": "low",
+    "description": "RFC 1918 private IPv4 address disclosure"
+  },
+  {
+    "name": "database_syntax_error_leak",
+    "pattern": "(?i)(?:You have an error in your SQL syntax|PostgreSQL query failed|ORA-\\d{4,5}|Microsoft OLE DB Provider for SQL Server|sqlite3\\.OperationalError)",
+    "category": "database_error",
+    "severity": "high",
+    "description": "Detailed database error disclosing backend DBMS"
+  }
+]

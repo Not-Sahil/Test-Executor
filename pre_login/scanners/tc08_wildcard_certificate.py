@@ -179,6 +179,18 @@ def _extract_certificate(der_bytes: bytes) -> dict[str, Any]:
         if name.startswith("*.")
     ]
 
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    try:
+        not_before = certificate.not_valid_before_utc
+        not_after = certificate.not_valid_after_utc
+    except AttributeError:
+        not_before = certificate.not_valid_before.replace(tzinfo=timezone.utc)
+        not_after = certificate.not_valid_after.replace(tzinfo=timezone.utc)
+
+    is_expired = now > not_after
+    is_not_yet_valid = now < not_before
+
     return {
         "serial_number": format(
             certificate.serial_number,
@@ -186,8 +198,10 @@ def _extract_certificate(der_bytes: bytes) -> dict[str, Any]:
         ),
         "subject": certificate.subject.rfc4514_string(),
         "issuer": certificate.issuer.rfc4514_string(),
-        "not_before": certificate.not_valid_before_utc.isoformat(),
-        "not_after": certificate.not_valid_after_utc.isoformat(),
+        "not_before": not_before.isoformat(),
+        "not_after": not_after.isoformat(),
+        "is_expired": is_expired,
+        "is_not_yet_valid": is_not_yet_valid,
         "common_name": common_name,
         "dns_names": dns_names,
         "ip_addresses": ip_names,
@@ -302,29 +316,35 @@ def _certificate_matches_hostname(
     hostname: str,
     dns_names: list[str],
     ip_addresses: list[str],
-) -> bool:
-
+    common_name: str = "",
+) -> tuple[bool, str]:
+    """Check hostname against certificate identities. Returns (matches, match_type)."""
     hostname = _normalise_dns_name(hostname)
 
     if _is_ip_address(hostname):
-        return hostname in {
-            _normalise_dns_name(value)
-            for value in ip_addresses
-        }
+        if hostname in {_normalise_dns_name(value) for value in ip_addresses}:
+            return True, "exact_ip"
+        return False, "none"
 
+    # 1. Exact SAN match
     for name in dns_names:
+        if "*" not in name and _normalise_dns_name(name) == hostname:
+            return True, "exact_san"
 
-        if "*" in name:
-            if _wildcard_matches_hostname(
-                name,
-                hostname,
-            ):
-                return True
+    # 2. Wildcard SAN match
+    for name in dns_names:
+        if "*" in name and _wildcard_matches_hostname(name, hostname):
+            return True, "wildcard_san"
 
-        elif name == hostname:
-            return True
+    # 3. Legacy CN fallback (only when no DNS SANs exist, per RFC 6125)
+    if not dns_names and common_name:
+        cn = _normalise_dns_name(common_name)
+        if "*" in cn and _wildcard_matches_hostname(cn, hostname):
+            return True, "wildcard_cn"
+        if cn == hostname:
+            return True, "exact_cn"
 
-    return False
+    return False, "none"
 
 
 # ============================================================================
@@ -339,47 +359,75 @@ def _fetch_certificate(
     timeout: float,
 ) -> dict[str, Any]:
 
-    context = ssl.create_default_context()
+    verification_failed = False
+    verification_error = ""
 
-    if not verify_tls:
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
+    der = None
+    tls_version = ""
+    cipher_info = None
 
-    with socket.create_connection(
-        (hostname, port),
-        timeout=timeout,
-    ) as raw_sock:
+    if verify_tls:
+        try:
+            context = ssl.create_default_context()
+            with socket.create_connection(
+                (hostname, port),
+                timeout=timeout,
+            ) as raw_sock:
+                with context.wrap_socket(
+                    raw_sock,
+                    server_hostname=hostname,
+                ) as tls_sock:
+                    der = tls_sock.getpeercert(binary_form=True)
+                    tls_version = tls_sock.version() or ""
+                    cipher_info = tls_sock.cipher()
+        except ssl.SSLCertVerificationError as exc:
+            verification_failed = True
+            verification_error = str(exc)
+        except ssl.SSLError as exc:
+            if "CERTIFICATE_VERIFY_FAILED" in str(exc) or "certificate verify failed" in str(exc).lower():
+                verification_failed = True
+                verification_error = str(exc)
+            else:
+                raise
 
-        with context.wrap_socket(
-            raw_sock,
-            server_hostname=hostname,
-        ) as tls_sock:
+    if der is None:
+        unverified_context = ssl.create_default_context()
+        unverified_context.check_hostname = False
+        unverified_context.verify_mode = ssl.CERT_NONE
 
-            der = tls_sock.getpeercert(
-                binary_form=True
-            )
+        with socket.create_connection(
+            (hostname, port),
+            timeout=timeout,
+        ) as raw_sock:
+            with unverified_context.wrap_socket(
+                raw_sock,
+                server_hostname=hostname,
+            ) as tls_sock:
+                der = tls_sock.getpeercert(binary_form=True)
+                if not tls_version:
+                    tls_version = tls_sock.version() or ""
+                if not cipher_info:
+                    cipher_info = tls_sock.cipher()
 
-            if not der:
-                raise RuntimeError(
-                    "TLS server did not provide a parseable peer certificate."
-                )
+    if not der:
+        raise RuntimeError(
+            "TLS server did not provide a parseable peer certificate."
+        )
 
-            parsed_certificate = _extract_certificate(
-                der
-            )
+    parsed_certificate = _extract_certificate(der)
 
-            cipher = tls_sock.cipher()
-
-            return {
-                "certificate": parsed_certificate,
-                "tls_version": tls_sock.version() or "",
-                "cipher": cipher[0] if cipher else "",
-                "cipher_bits": (
-                    cipher[2]
-                    if cipher and len(cipher) >= 3
-                    else None
-                ),
-            }
+    return {
+        "certificate": parsed_certificate,
+        "tls_version": tls_version,
+        "cipher": cipher_info[0] if cipher_info else "",
+        "cipher_bits": (
+            cipher_info[2]
+            if cipher_info and len(cipher_info) >= 3
+            else None
+        ),
+        "verification_failed": verification_failed,
+        "verification_error": verification_error,
+    }
 
 
 # ============================================================================
@@ -459,7 +507,8 @@ def _probe_candidate_host(
                     hostname,
                     certificate["dns_names"],
                     certificate["ip_addresses"],
-                )
+                    certificate.get("common_name", ""),
+                )[0]
             ),
         )
 
@@ -492,8 +541,6 @@ def scan_wildcard_certificate(
 
     inferred_https = parsed.scheme.lower() == "http"
     if inferred_https:
-        # A site URL supplied over HTTP can still expose HTTPS on the same host.
-        # Try the same host/path over HTTPS rather than skipping TLS-specific tests.
         target = parsed._replace(scheme="https").geturl()
         parsed = urlparse(target)
 
@@ -533,30 +580,19 @@ def scan_wildcard_certificate(
             timeout=timeout,
         )
 
-    except ssl.SSLCertVerificationError as exc:
-
-        return result(
-            "REVIEW REQUIRED",
-            "The target presented a TLS certificate that failed local certificate verification. Wildcard analysis could not be completed reliably with certificate verification enabled.",
-            details={
-                **details,
-                "error_type": type(exc).__name__,
-                "error": str(exc)[:500],
-            },
-            evidence=[
-                "TLS certificate verification failed.",
-                "Retrying with certificate verification disabled may be useful only for authorized targets where certificate validity is already understood.",
-            ],
-        )
-
     except Exception as exc:
-
         return connection_result(
             exc,
             target=target,
         )
 
-    certificate = tls_data["certificate"]
+    certificate = tls_data.get("certificate")
+    if not certificate:
+        return result(
+            "INCOMPLETE",
+            "Certificate inspection failed: could not parse peer certificate.",
+            details=details,
+        )
 
     details.update(
         {
@@ -564,6 +600,8 @@ def scan_wildcard_certificate(
             "cipher": tls_data["cipher"],
             "cipher_bits": tls_data["cipher_bits"],
             "certificate": certificate,
+            "verification_failed": tls_data.get("verification_failed", False),
+            "verification_error": tls_data.get("verification_error", ""),
         }
     )
 
@@ -572,24 +610,50 @@ def scan_wildcard_certificate(
     wildcards = certificate["wildcard_sans"]
 
     # ------------------------------------------------------------------
-    # 3. Validate certificate identity against requested hostname
+    # 3. Check certificate validity period (expiry / not yet valid)
     # ------------------------------------------------------------------
 
-    hostname_matches = _certificate_matches_hostname(
+    if certificate.get("is_expired"):
+        return result(
+            "UNSAFE",
+            f"The presented TLS certificate expired on {certificate['not_after']}.",
+            details=details,
+            evidence=[
+                f"Requested hostname: {host}",
+                f"Certificate expired on: {certificate['not_after']}",
+                f"Certificate valid from: {certificate['not_before']}",
+            ],
+        )
+
+    if certificate.get("is_not_yet_valid"):
+        return result(
+            "UNSAFE",
+            f"The presented TLS certificate is not valid before {certificate['not_before']}.",
+            details=details,
+            evidence=[
+                f"Requested hostname: {host}",
+                f"Certificate not valid before: {certificate['not_before']}",
+            ],
+        )
+
+    # ------------------------------------------------------------------
+    # 4. Validate certificate identity against requested hostname
+    # ------------------------------------------------------------------
+
+    hostname_matches, match_type = _certificate_matches_hostname(
         host,
         dns_names,
         ip_addresses,
+        common_name=certificate.get("common_name", ""),
     )
 
-    details["hostname_matches_certificate"] = (
-        hostname_matches
-    )
+    details["hostname_matches_certificate"] = hostname_matches
+    details["certificate_match_type"] = match_type
 
     if not hostname_matches:
-
         return result(
             "UNSAFE",
-            "The hostname used for the TLS connection does not match any DNS or IP identity presented by the certificate.",
+            "The hostname used for the TLS connection does not match any DNS, CN, or IP identity presented by the certificate.",
             details=details,
             evidence=[
                 f"Requested hostname: {host}",
@@ -599,6 +663,13 @@ def scan_wildcard_certificate(
                         ", ".join(dns_names)
                         if dns_names
                         else "none"
+                    )
+                ),
+                (
+                    "Certificate CN: "
+                    + (
+                        certificate.get("common_name")
+                        or "none"
                     )
                 ),
                 (
@@ -613,14 +684,28 @@ def scan_wildcard_certificate(
         )
 
     # ------------------------------------------------------------------
-    # 4. No wildcard
+    # 5. Check certificate chain verification trust
+    # ------------------------------------------------------------------
+
+    if tls_data.get("verification_failed"):
+        return result(
+            "REVIEW REQUIRED",
+            "The target presented a certificate that could not be verified against the local trust store (untrusted chain or self-signed certificate).",
+            details=details,
+            evidence=[
+                f"TLS certificate verification error: {tls_data.get('verification_error')}",
+                "Review whether the certificate is issued by a private or untrusted CA.",
+            ],
+        )
+
+    # ------------------------------------------------------------------
+    # 6. No wildcard
     # ------------------------------------------------------------------
 
     if not wildcards:
-
         return result(
             "SAFE",
-            "The presented certificate does not contain a wildcard DNS identity.",
+            "The presented certificate does not contain a wildcard DNS identity and matches the requested hostname exactly.",
             details=details,
         )
 
@@ -864,9 +949,20 @@ def scan_wildcard_certificate(
     # 11. Normal wildcard configuration
     # ------------------------------------------------------------------
 
+    if match_type == "exact_san":
+        return result(
+            "SAFE",
+            "The presented certificate matches the requested hostname via an exact SAN match. The certificate also includes a valid wildcard identity with appropriate scope.",
+            details=details,
+            evidence=[
+                f"Matching exact SAN: {host}",
+                *[f"Wildcard SAN: {wildcard}" for wildcard in wildcards],
+            ],
+        )
+
     return result(
         "SAFE",
-        "A syntactically valid wildcard certificate is in use and the requested hostname matches the certificate. No unusually broad wildcard scope or confirmed sensitive sibling using the same certificate was identified by the bounded checks.",
+        "A syntactically valid wildcard certificate is in use and correctly validates for the requested hostname. No unusually broad wildcard scope or confirmed sensitive sibling using the same certificate was identified by the bounded checks.",
         details=details,
         evidence=[
             f"Wildcard SAN: {wildcard}"

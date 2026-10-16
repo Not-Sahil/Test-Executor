@@ -1,0 +1,72 @@
+[
+  {
+    "name": "empty_value",
+    "value": "",
+    "category": "empty",
+    "description": "Empty field input to test mandatory validation",
+    "expected_validation": "rejected_cleanly"
+  },
+  {
+    "name": "whitespace_only",
+    "value": "     ",
+    "category": "whitespace",
+    "description": "Whitespace-only input to test trimming and validation",
+    "expected_validation": "rejected_cleanly"
+  },
+  {
+    "name": "unexpected_alpha_in_numeric",
+    "value": "invalid_alpha_string",
+    "category": "type_mismatch",
+    "description": "Alphabetic input where numeric or identifier is expected",
+    "expected_validation": "rejected_cleanly"
+  },
+  {
+    "name": "invalid_email_format",
+    "value": "user@invalid..domain...com",
+    "category": "invalid_format",
+    "description": "Malformed email address syntax",
+    "expected_validation": "rejected_cleanly"
+  },
+  {
+    "name": "invalid_url_format",
+    "value": "htt://invalid-uri-schema",
+    "category": "invalid_format",
+    "description": "Malformed URL syntax",
+    "expected_validation": "rejected_cleanly"
+  },
+  {
+    "name": "boundary_negative_number",
+    "value": "-9999999",
+    "category": "boundary_numeric",
+    "description": "Negative integer where non-negative number is expected",
+    "expected_validation": "rejected_cleanly"
+  },
+  {
+    "name": "boundary_excessive_length",
+    "value": "A_EXCESSIVE_LENGTH_BOUNDARY_TEST_INPUT_STRING_PADDING_REPEATED_SAFE_TEST",
+    "category": "boundary_length",
+    "description": "Long input to test length constraint enforcement",
+    "expected_validation": "rejected_cleanly"
+  },
+  {
+    "name": "malformed_json_structure",
+    "value": "{\"invalid_json\": [unclosed_payload",
+    "category": "malformed_structured",
+    "description": "Malformed JSON payload to test structured parser resilience",
+    "expected_validation": "rejected_cleanly"
+  },
+  {
+    "name": "null_byte_encoding",
+    "value": "test_input\u0000null_terminated",
+    "category": "unexpected_encoding",
+    "description": "Null byte injection to test string termination handling",
+    "expected_validation": "rejected_cleanly"
+  },
+  {
+    "name": "special_characters_mix",
+    "value": "<>'\"&;|`$()",
+    "category": "special_characters",
+    "description": "Special shell/HTML/SQL characters to test character set validation",
+    "expected_validation": "rejected_cleanly"
+  }
+]
