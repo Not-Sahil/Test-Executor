@@ -85,6 +85,11 @@ class TLSHostObservation:
 
 def _normalise_dns_name(value: str) -> str:
     value = value.strip().rstrip(".")
+    try:
+        # Normalize IDN / Punycode (RFC 5890 / RFC 6125)
+        value = value.encode("idna").decode("ascii")
+    except Exception:
+        pass
     return value.lower()
 
 
@@ -178,6 +183,9 @@ def _extract_certificate(der_bytes: bytes) -> dict[str, Any]:
         for name in dns_names
         if name.startswith("*.")
     ]
+    wildcards = list(wildcard_sans)
+    if not dns_names and common_name.startswith("*.") and common_name not in wildcards:
+        wildcards.append(common_name)
 
     from datetime import datetime, timezone
     now = datetime.now(timezone.utc)
@@ -206,6 +214,7 @@ def _extract_certificate(der_bytes: bytes) -> dict[str, Any]:
         "dns_names": dns_names,
         "ip_addresses": ip_names,
         "wildcard_sans": wildcard_sans,
+        "wildcards": wildcards,
         "signature_algorithm": (
             certificate.signature_hash_algorithm.name
             if certificate.signature_hash_algorithm
@@ -607,7 +616,7 @@ def scan_wildcard_certificate(
 
     dns_names = certificate["dns_names"]
     ip_addresses = certificate["ip_addresses"]
-    wildcards = certificate["wildcard_sans"]
+    wildcards = certificate.get("wildcards") or certificate.get("wildcard_sans") or []
 
     # ------------------------------------------------------------------
     # 3. Check certificate validity period (expiry / not yet valid)
@@ -651,36 +660,24 @@ def scan_wildcard_certificate(
     details["certificate_match_type"] = match_type
 
     if not hostname_matches:
+        mismatch_evidence = [
+            f"Requested hostname: {host}",
+            "Certificate DNS names: " + (", ".join(dns_names) if dns_names else "none"),
+            "Certificate CN: " + (certificate.get("common_name") or "none"),
+            "Certificate IP names: " + (", ".join(ip_addresses) if ip_addresses else "none"),
+        ]
+        if wildcards:
+            for wc in wildcards:
+                mismatch_evidence.append(
+                    f"Identity '{wc}' is a single-label wildcard: it matches single-level subdomains "
+                    f"(e.g., 'app.{_registrable_parent_from_wildcard(wc)}'), but per RFC 6125 does NOT match "
+                    f"the apex domain '{_registrable_parent_from_wildcard(wc)}' or multi-level subdomains."
+                )
         return result(
             "UNSAFE",
             "The hostname used for the TLS connection does not match any DNS, CN, or IP identity presented by the certificate.",
             details=details,
-            evidence=[
-                f"Requested hostname: {host}",
-                (
-                    "Certificate DNS names: "
-                    + (
-                        ", ".join(dns_names)
-                        if dns_names
-                        else "none"
-                    )
-                ),
-                (
-                    "Certificate CN: "
-                    + (
-                        certificate.get("common_name")
-                        or "none"
-                    )
-                ),
-                (
-                    "Certificate IP names: "
-                    + (
-                        ", ".join(ip_addresses)
-                        if ip_addresses
-                        else "none"
-                    )
-                ),
-            ],
+            evidence=mismatch_evidence,
         )
 
     # ------------------------------------------------------------------
@@ -913,23 +910,10 @@ def scan_wildcard_certificate(
         sensitive_siblings
     )
 
-    if sensitive_siblings:
-
-        evidence = [
-            (
-                f"Potentially sensitive host "
-                f"{observation['hostname']} resolves and "
-                f"presented the same certificate."
-            )
-            for observation in sensitive_siblings
-        ]
-
-        return result(
-            "REVIEW REQUIRED",
-            "The wildcard certificate is actively presented by one or more potentially sensitive sibling hosts. This does not prove a vulnerability, but it indicates that the same certificate scope may span multiple security-sensitive services and should be reviewed.",
-            details=details,
-            evidence=evidence,
-        )
+    sibling_evidence = [
+        f"Sibling host '{observation['hostname']}' also presents this wildcard certificate."
+        for observation in sensitive_siblings
+    ]
 
     # ------------------------------------------------------------------
     # 10. Check whether the target's wildcard is the only broad identity
@@ -956,16 +940,19 @@ def scan_wildcard_certificate(
             details=details,
             evidence=[
                 f"Matching exact SAN: {host}",
-                *[f"Wildcard SAN: {wildcard}" for wildcard in wildcards],
+                *[f"Wildcard identity: {wildcard}" for wildcard in wildcards],
+                *sibling_evidence,
             ],
         )
 
     return result(
         "SAFE",
-        "A syntactically valid wildcard certificate is in use and correctly validates for the requested hostname. No unusually broad wildcard scope or confirmed sensitive sibling using the same certificate was identified by the bounded checks.",
+        "A syntactically valid wildcard certificate is in use and correctly validates for the requested hostname.",
         details=details,
         evidence=[
-            f"Wildcard SAN: {wildcard}"
-            for wildcard in wildcards
+            f"Matching wildcard identity: {', '.join(matching_wildcards or wildcards)}",
+            f"Requested hostname: {host}",
+            *[f"Wildcard identity: {wildcard}" for wildcard in wildcards],
+            *sibling_evidence,
         ],
     )

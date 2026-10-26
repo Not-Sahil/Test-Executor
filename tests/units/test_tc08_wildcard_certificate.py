@@ -288,3 +288,93 @@ def test_connection_failure_returns_incomplete():
     ):
         res = scan_wildcard_certificate("https://nonexistent.test.local:443")
         assert res["status"] in {"INCOMPLETE", "ERROR"}
+
+
+def test_wildcard_used_against_base_domain_returns_unsafe():
+    # Certificate has ONLY *.example.com, target is apex example.com -> UNSAFE mismatch
+    der = _generate_test_cert_der(
+        common_name="*.example.com",
+        dns_names=["*.example.com"],
+    )
+
+    with patch(
+        "pre_login.scanners.tc08_wildcard_certificate._fetch_certificate",
+        return_value={
+            "certificate": __import__(
+                "pre_login.scanners.tc08_wildcard_certificate",
+                fromlist=["_extract_certificate"],
+            )._extract_certificate(der),
+            "tls_version": "TLSv1.3",
+            "cipher": "TLS_AES_256_GCM_SHA384",
+            "cipher_bits": 256,
+            "verification_failed": False,
+            "verification_error": "",
+        },
+    ):
+        res = scan_wildcard_certificate("https://example.com")
+        assert res["status"] == "UNSAFE"
+        assert "does not match" in res["summary"]
+        assert any("single-label wildcard" in ev for ev in res["evidence"])
+
+
+def test_valid_wildcard_with_sensitive_sibling_still_returns_safe():
+    # Legitimate wildcard cert app.example.com vs *.example.com with dev/test sibling also resolving
+    der = _generate_test_cert_der(
+        common_name="app.example.com",
+        dns_names=["*.example.com"],
+    )
+
+    with patch(
+        "pre_login.scanners.tc08_wildcard_certificate._fetch_certificate",
+        return_value={
+            "certificate": __import__(
+                "pre_login.scanners.tc08_wildcard_certificate",
+                fromlist=["_extract_certificate"],
+            )._extract_certificate(der),
+            "tls_version": "TLSv1.3",
+            "cipher": "TLS_AES_256_GCM_SHA384",
+            "cipher_bits": 256,
+            "verification_failed": False,
+            "verification_error": "",
+        },
+    ), patch(
+        "pre_login.scanners.tc08_wildcard_certificate.resolve_host",
+        return_value=["198.51.100.1"],
+    ):
+        res = scan_wildcard_certificate("https://app.example.com")
+        # Must be SAFE, NOT falsely downgraded to REVIEW REQUIRED!
+        assert res["status"] == "SAFE"
+        assert "valid wildcard certificate is in use" in res["summary"]
+
+
+def test_broad_public_suffix_wildcard_returns_review_required():
+    # *.com is overly broad
+    der = _generate_test_cert_der(
+        common_name="app.com",
+        dns_names=["*.com"],
+    )
+
+    with patch(
+        "pre_login.scanners.tc08_wildcard_certificate._fetch_certificate",
+        return_value={
+            "certificate": __import__(
+                "pre_login.scanners.tc08_wildcard_certificate",
+                fromlist=["_extract_certificate"],
+            )._extract_certificate(der),
+            "tls_version": "TLSv1.3",
+            "cipher": "TLS_AES_256_GCM_SHA384",
+            "cipher_bits": 256,
+            "verification_failed": False,
+            "verification_error": "",
+        },
+    ):
+        res = scan_wildcard_certificate("https://app.com")
+        assert res["status"] == "REVIEW REQUIRED"
+        assert "wildcard" in res["summary"].lower()
+
+
+def test_idn_punycode_hostname_matching():
+    # IDN German umlaut: münchen.example.com -> xn--mnchen-3ya.example.com
+    assert _wildcard_matches_hostname("*.example.com", "xn--mnchen-3ya.example.com") is True
+    assert _wildcard_matches_hostname("*.example.com", "münchen.example.com") is True
+

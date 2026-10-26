@@ -139,3 +139,82 @@ def test_ipv6_bracket_formatting():
         mock_curl.side_effect = curl_side_effect
         scan_ip_access("https://ipv6.example.com")
         assert any("[2001:db8::1]" in u for u in captured_urls)
+
+
+def test_protocol_divergence_http_redirect_https_unsafe():
+    """Verify that when HTTP redirects canonically but HTTPS exposes the app, UNSAFE is returned and divergence is noted."""
+    domain_raw = _mock_snapshot_raw(title="Secret Portal", body="Internal customer data and dashboard")
+    http_redirect = _mock_snapshot_raw(status_code=301, title="Redirect", location="https://portal.example.com/")
+    https_exposed = _mock_snapshot_raw(status_code=200, title="Secret Portal", body="Internal customer data and dashboard")
+
+    with patch("pre_login.scanners.tc17_website_accessible_over_ip._resolve_all", return_value={"ipv4": ["198.51.100.10"], "ipv6": []}), \
+         patch("pre_login.scanners.tc17_website_accessible_over_ip._curl_request") as mock_curl:
+        def curl_side_effect(url, **kwargs):
+            if "http://" in url and not kwargs.get("connect_ip"):
+                return http_redirect, None
+            if "https://" in url and not kwargs.get("connect_ip") and "198.51.100.10" in url:
+                return https_exposed, None
+            return domain_raw, None
+
+        mock_curl.side_effect = curl_side_effect
+        res = scan_ip_access("https://portal.example.com")
+        assert res["status"] == "UNSAFE"
+        assert res["details"]["protocol_divergence_observed"] is True
+        assert len(res["details"]["http_results"]) > 0
+        assert len(res["details"]["https_results"]) > 0
+        assert any("Protocol divergence" in e for e in res["evidence"])
+
+
+def test_tls_handshake_rejection_treated_as_restricted_safe():
+    """Verify TLS cert rejection / handshake failure on direct IP is handled as access restriction, returning SAFE."""
+    domain_raw = _mock_snapshot_raw(title="Protected App", body="Protected application payload")
+
+    with patch("pre_login.scanners.tc17_website_accessible_over_ip._resolve_all", return_value={"ipv4": ["198.51.100.11"], "ipv6": []}), \
+         patch("pre_login.scanners.tc17_website_accessible_over_ip._curl_request") as mock_curl:
+        def curl_side_effect(url, **kwargs):
+            if "198.51.100.11" in url or kwargs.get("connect_ip") == "198.51.100.11":
+                return None, "curl: (60) SSL certificate problem: self-signed certificate"
+            return domain_raw, None
+
+        mock_curl.side_effect = curl_side_effect
+        res = scan_ip_access("https://secure.example.com")
+        assert res["status"] == "SAFE"
+        assert "restricted, blocked, or not exposed" in res["summary"]
+        assert any("TLS" in r.get("reason", "") for r in res["details"]["restricted_ips"])
+
+
+def test_sensitive_admin_exposure_returns_unsafe():
+    """Verify that discovering an admin panel on direct IP returns UNSAFE."""
+    domain_raw = _mock_snapshot_raw(title="Company Website", body="Welcome to company main website")
+    admin_raw = _mock_snapshot_raw(status_code=200, title="phpMyAdmin 5.2.0", body="phpMyAdmin Database Management System login page")
+
+    with patch("pre_login.scanners.tc17_website_accessible_over_ip._resolve_all", return_value={"ipv4": ["198.51.100.12"], "ipv6": []}), \
+         patch("pre_login.scanners.tc17_website_accessible_over_ip._curl_request") as mock_curl:
+        def curl_side_effect(url, **kwargs):
+            if "198.51.100.12" in url:
+                return admin_raw, None
+            return domain_raw, None
+
+        mock_curl.side_effect = curl_side_effect
+        res = scan_ip_access("https://corp.example.com")
+        assert res["status"] == "UNSAFE"
+        assert res["details"]["sensitive_exposure_confirmed"] is True
+        assert "secondary application interface" in res["summary"]
+
+
+def test_timeout_classified_as_restricted_safe():
+    """Verify that network timeouts when accessing direct IP are classified as restricted access when baseline succeeds."""
+    domain_raw = _mock_snapshot_raw(title="My Site", body="My Site Content")
+
+    with patch("pre_login.scanners.tc17_website_accessible_over_ip._resolve_all", return_value={"ipv4": ["198.51.100.13"], "ipv6": []}), \
+         patch("pre_login.scanners.tc17_website_accessible_over_ip._curl_request") as mock_curl:
+        def curl_side_effect(url, **kwargs):
+            if "198.51.100.13" in url or kwargs.get("connect_ip") == "198.51.100.13":
+                return None, "curl: (28) Connection timed out after 10000 milliseconds"
+            return domain_raw, None
+
+        mock_curl.side_effect = curl_side_effect
+        res = scan_ip_access("https://mysite.example.com")
+        assert res["status"] == "SAFE"
+        assert "restricted, blocked, or not exposed" in res["summary"]
+

@@ -124,9 +124,24 @@ def scan_sensitive_information_disclosure(
     details = {
         "target": target_url,
         "urls_inspected": [r.url for r in responses],
+        "signatures_inspected": len(signatures),
+        "probe_cap": len(signatures),
+        "executed_probe_count": len(responses) * len(signatures),
+        "payloads_used": [
+            {"name": s["name"], "payload": s["pattern"][:60], "kind": s.get("category", "info_leak")}
+            for s in signatures[:20]
+        ],
         "confirmed_disclosures": confirmed_disclosures,
         "review_disclosures": review_disclosures,
     }
+    if confirmed_disclosures:
+        details["triggering_payload"] = {
+            "name": confirmed_disclosures[0]["signature"],
+            "payload": confirmed_disclosures[0]["snippet"],
+            "parameter": confirmed_disclosures[0]["location"],
+            "kind": confirmed_disclosures[0]["category"],
+            "verdict": "UNSAFE",
+        }
 
     if confirmed_disclosures:
         return {

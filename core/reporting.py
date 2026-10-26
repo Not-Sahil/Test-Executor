@@ -45,6 +45,13 @@ TEST_FILE_SLUGS = {
     "tc21_crossdomain_xml": "21_crossdomain_xml",
     "tc22_application_running_on_http": "22_application_running_on_http",
     "tc23_internal_path_disclosure": "23_internal_path_disclosure",
+    "tc24_boolean_sql_injection": "24_boolean_sql_injection",
+    "tc25_time_based_sql_injection": "25_time_based_sql_injection",
+    "tc26_blind_sql_injection": "26_blind_sql_injection",
+    "tc27_union_sql_injection": "27_union_sql_injection",
+    "tc28_poor_input_validation": "28_poor_input_validation",
+    "tc29_sensitive_information_disclosure": "29_sensitive_information_disclosure",
+    "tc30_prototype_pollution_dom_xss": "30_prototype_pollution_dom_xss",
 }
 
 

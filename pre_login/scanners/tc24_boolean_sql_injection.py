@@ -154,9 +154,22 @@ def scan_boolean_sql_injection(
     details = {
         "target": target_url,
         "parameters_tested": [t.name for t in targets],
+        "probe_cap": len(all_probes),
         "executed_probe_count": executed_probes,
+        "payloads_used": [
+            {"name": p["name"], "payload": p["value"], "kind": p.get("kind", "boolean_probe")}
+            for p in all_probes[:max(executed_probes, 4)]
+        ],
         "confirmed_pairs": confirmed_pair_details,
     }
+    if confirmed_pair_details:
+        details["triggering_payload"] = {
+            "name": confirmed_pair_details[0]["pair_id"],
+            "payload": confirmed_pair_details[0]["true_payload"],
+            "parameter": confirmed_pair_details[0]["parameter"],
+            "kind": "boolean_true",
+            "verdict": "UNSAFE",
+        }
 
     if differential_confirmed:
         return {

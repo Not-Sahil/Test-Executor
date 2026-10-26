@@ -126,10 +126,23 @@ def scan_time_based_sql_injection(
     details = {
         "target": target_url,
         "avg_baseline_seconds": round(avg_baseline, 3),
+        "probe_cap": len(probes) * 2,
         "executed_probe_count": executed_count,
         "timeouts_encountered": timeouts_encountered,
+        "payloads_used": [
+            {"name": p["name"], "payload": p["value"], "kind": "time_delay"}
+            for p in probes[:max(executed_count, 2)]
+        ],
         "confirmed_observations": confirmed_observations,
     }
+    if confirmed_observations:
+        details["triggering_payload"] = {
+            "name": confirmed_observations[0]["probe"],
+            "payload": confirmed_observations[0]["payload"],
+            "parameter": confirmed_observations[0]["parameter"],
+            "kind": "time_delay",
+            "verdict": "UNSAFE",
+        }
 
     if time_sqli_confirmed:
         return {

@@ -142,16 +142,43 @@ def scan_prototype_pollution_dom_xss(
             browser_error = str(exc)
 
     evidence: list[str] = []
+    scenarios = _load_pp_scenarios()
     details = {
         "target": target_url,
         "scripts_analyzed": len(scripts),
         "unsafe_merge_patterns": found_merge_patterns,
         "dom_sinks": found_dom_sinks,
+        "probe_cap": len(scenarios),
+        "executed_probe_count": 1 if browser_tested else 0,
+        "payloads_used": [
+            {
+                "name": s["name"],
+                "payload": s.get("payload_query") or s.get("payload") or s.get("value") or "",
+                "kind": s.get("kind") or s.get("source") or "prototype_pollution",
+            }
+            for s in scenarios[:10]
+        ],
         "browser_tested": browser_tested,
         "browser_error": browser_error,
         "prototype_pollution_confirmed": pp_confirmed,
         "dom_xss_confirmed": xss_confirmed,
     }
+    if xss_confirmed:
+        details["triggering_payload"] = {
+            "name": "prototype_pollution_dom_xss",
+            "payload": f"__proto__[{canary_property}]={canary_value}",
+            "parameter": canary_property,
+            "kind": "dom_xss",
+            "verdict": "UNSAFE",
+        }
+    elif pp_confirmed:
+        details["triggering_payload"] = {
+            "name": "prototype_pollution",
+            "payload": f"__proto__[{canary_property}]={canary_value}",
+            "parameter": canary_property,
+            "kind": "prototype_pollution",
+            "verdict": "REVIEW REQUIRED",
+        }
 
     # Classification logic based on requirements
     if xss_confirmed:

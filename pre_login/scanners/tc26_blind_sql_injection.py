@@ -156,10 +156,23 @@ def scan_blind_sql_injection(
     details = {
         "target": target_url,
         "technique_used": technique_used,
+        "probe_cap": len(scenarios),
         "executed_probe_count": executed_count,
         "parameters_tested": [t.name for t in targets],
+        "payloads_used": [
+            {"name": s["name"], "payload": s["value"], "kind": s.get("kind", "blind_sqli")}
+            for s in scenarios[:max(executed_count, 4)]
+        ],
         "confirmed_findings": confirmed_findings,
     }
+    if confirmed_findings:
+        details["triggering_payload"] = {
+            "name": confirmed_findings[0]["technique"],
+            "payload": confirmed_findings[0]["true_payload"],
+            "parameter": confirmed_findings[0]["parameter"],
+            "kind": confirmed_findings[0]["technique"],
+            "verdict": "UNSAFE",
+        }
 
     if blind_confirmed:
         return {

@@ -154,9 +154,22 @@ def scan_union_sql_injection(
     details = {
         "target": target_url,
         "parameters_tested": [t.name for t in targets],
+        "probe_cap": len(probes),
         "executed_probe_count": executed_count,
+        "payloads_used": [
+            {"name": p["name"], "payload": p["value"], "kind": p.get("kind", "union_probe")}
+            for p in probes[:max(executed_count, 4)]
+        ],
         "confirmed_findings": confirmed_findings,
     }
+    if confirmed_findings:
+        details["triggering_payload"] = {
+            "name": confirmed_findings[0]["probe"],
+            "payload": confirmed_findings[0]["payload"],
+            "parameter": confirmed_findings[0]["parameter"],
+            "kind": "union_select",
+            "verdict": "UNSAFE",
+        }
 
     if union_confirmed:
         return {

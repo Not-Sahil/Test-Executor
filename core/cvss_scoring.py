@@ -152,6 +152,38 @@ PROFILES: dict[str, dict[str, str]] = {
         "AV": "N", "AC": "H", "AT": "N", "PR": "N", "UI": "P",
         "VC": "L", "VI": "N", "VA": "N", "SC": "N", "SI": "N", "SA": "N"
     },
+
+    # --- Pre-Login TC24-TC27: SQL Injection Variants ---
+    "tc24_boolean_sql_injection": {
+        "AV": "N", "AC": "L", "AT": "N", "PR": "N", "UI": "N",
+        "VC": "H", "VI": "H", "VA": "N", "SC": "N", "SI": "N", "SA": "N"
+    },
+    "tc25_time_based_sql_injection": {
+        "AV": "N", "AC": "L", "AT": "N", "PR": "N", "UI": "N",
+        "VC": "H", "VI": "H", "VA": "N", "SC": "N", "SI": "N", "SA": "N"
+    },
+    "tc26_blind_sql_injection": {
+        "AV": "N", "AC": "L", "AT": "N", "PR": "N", "UI": "N",
+        "VC": "H", "VI": "H", "VA": "N", "SC": "N", "SI": "N", "SA": "N"
+    },
+    "tc27_union_sql_injection": {
+        "AV": "N", "AC": "L", "AT": "N", "PR": "N", "UI": "N",
+        "VC": "H", "VI": "H", "VA": "N", "SC": "N", "SI": "N", "SA": "N"
+    },
+
+    # --- Pre-Login TC28-TC30: Input Validation, Sensitive Info, Prototype Pollution DOM XSS ---
+    "tc28_poor_input_validation": {
+        "AV": "N", "AC": "L", "AT": "N", "PR": "N", "UI": "N",
+        "VC": "L", "VI": "L", "VA": "L", "SC": "N", "SI": "N", "SA": "N"
+    },
+    "tc29_sensitive_information_disclosure": {
+        "AV": "N", "AC": "L", "AT": "N", "PR": "N", "UI": "N",
+        "VC": "H", "VI": "N", "VA": "N", "SC": "N", "SI": "N", "SA": "N"
+    },
+    "tc30_prototype_pollution_dom_xss": {
+        "AV": "N", "AC": "L", "AT": "N", "PR": "N", "UI": "P",
+        "VC": "H", "VI": "H", "VA": "N", "SC": "N", "SI": "N", "SA": "N"
+    },
 }
 
 DEFAULT_METRICS = {

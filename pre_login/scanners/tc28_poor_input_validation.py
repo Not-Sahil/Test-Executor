@@ -118,11 +118,25 @@ def scan_poor_input_validation(
     details = {
         "target": target_url,
         "parameters_tested": [t.name for t in targets],
+        "probe_cap": len(scenarios),
+        "executed_probe_count": len(tested_fields_records),
         "scenarios_executed": len(tested_fields_records),
         "unhandled_exception_count": len(unhandled_exceptions),
         "proper_validation_count": len(proper_validations),
+        "payloads_used": [
+            {"name": r["scenario"], "payload": r["input_value"], "kind": r["category"]}
+            for r in tested_fields_records
+        ],
         "tested_records": tested_fields_records,
     }
+    if unhandled_exceptions:
+        details["triggering_payload"] = {
+            "name": unhandled_exceptions[0]["scenario"],
+            "payload": unhandled_exceptions[0]["input_value"],
+            "parameter": unhandled_exceptions[0]["field"],
+            "kind": unhandled_exceptions[0]["category"],
+            "verdict": "UNSAFE",
+        }
 
     if unhandled_exceptions:
         return {
