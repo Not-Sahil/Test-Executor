@@ -1744,3 +1744,12 @@ def overall_status(
         return "INCOMPLETE"
 
     return "INCOMPLETE"
+
+
+# ============================================================
+# UNIFIED BLACKBOX EXECUTOR EXPORTS
+# ============================================================
+from core.blackbox_runner import (
+    UnifiedBlackboxExecutor,
+    run_unified_blackbox_suite,
+)

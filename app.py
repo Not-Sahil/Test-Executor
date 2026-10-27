@@ -36,18 +36,24 @@ from core.assessment_orchestrator import (
     overall_status,
     ScanResult,
 )
+from core.blackbox_runner import run_unified_blackbox_suite
 from pre_login.runner import run_pre_login_suite, PRE_LOGIN_TESTS
 from login_page.registry import LOGIN_PAGE_TESTS as LOGIN_PAGE_REGISTRY
+from login_page.runner import run_login_page_suite
 
 from authentication.captcha_human import (
     human_login_with_captcha,
     probe_login_captcha,
 )
 
-from core.reporting import save_run_output
+from urllib.parse import urlparse
+
 from core.cvss_scoring import annotate_result
-from payloads.manager import payload_library_summary, source_catalog_summary
+from core.models import ScopeStatus
+from core.reporting import save_run_output
+from core.scope import ScopeValidator
 from core.target_policy import TargetPolicy, validate_target_url, same_origin
+from payloads.manager import payload_library_summary, source_catalog_summary
 
 
 # ==============================================================
@@ -798,6 +804,33 @@ def render_combined_report(
         """,
         unsafe_allow_html=True,
     )
+
+    target_disc = st.session_state.get("target_discovery")
+    if target_disc:
+        app_org = escape(str(target_disc.get("application_origin", "")))
+        login_org = escape(str(target_disc.get("login_origin") or "N/A"))
+        idp_org = escape(str(target_disc.get("identity_provider_origin") or "None"))
+        auth_info = target_disc.get("authentication_flow") or {}
+        proto_hint = escape(str(auth_info.get("protocol_hint", "N/A")))
+        confidence = escape(str(auth_info.get("confidence", "low")))
+        scope_info = target_disc.get("scope") or {}
+        scope_str = ", ".join(f"{k}: {v}" for k, v in scope_info.items())
+
+        st.markdown(
+            f"""
+            <div style="background: #eef2f7; padding: 14px 18px; border-radius: 8px; margin: 16px 0; border-left: 4px solid #0052cc;">
+                <h4 style="margin-top: 0; color: #0052cc;">Target Discovery & Authentication Architecture</h4>
+                <p style="margin-bottom: 0;">
+                    <b>Application Origin:</b> {app_org}<br>
+                    <b>Discovered Login Origin:</b> {login_org}<br>
+                    <b>Identity Provider:</b> {idp_org}<br>
+                    <b>Authentication Protocol Hint:</b> {proto_hint} (Confidence: {confidence})<br>
+                    <b>Scope Validation:</b> {escape(scope_str)}
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     if run_dir:
         st.info(
@@ -1802,13 +1835,14 @@ if testing_mode == "GRAY BOX TESTING":
 # ==============================================================
 
 st.header("0. Assessment Suite")
+unified_label = f"Unified Blackbox Assessment ({len(PRE_LOGIN_TESTS) + len(LOGIN_PAGE_REGISTRY)} Tests: 30 Pre-Login + 17 Login-Page)"
 pre_login_label = f"Pre-Login Tests ({len(PRE_LOGIN_TESTS)})"
 assessment_suite = st.radio(
     "Choose assessment suite",
-    (pre_login_label, "Login Page Tests (17)"),
+    (unified_label, pre_login_label, "Login Page Tests (17)"),
     index=0,
     horizontal=True,
-    help=f"Run the {len(PRE_LOGIN_TESTS)} pre-login scanners or the integrated 17-test login-page suite.",
+    help=f"Run the unified 47-test blackbox suite, or run pre-login or login-page suites separately.",
 )
 
 st.header("1. Target")
@@ -1826,9 +1860,16 @@ authorized_assessment = st.checkbox(
 )
 
 login_path = st.text_input(
-    "Login Page Path",
+    "Login Page Path or Centralized URL",
     value="/login",
-    help="Path used by login-page authentication tests. Example: /login or /signin.",
+    help="Relative path (e.g. /login) or absolute centralized URL (e.g. https://auth.globalbank.sbi/login). If on a separate origin, add its origin to 'Optional Additional In-Scope Origins'.",
+)
+
+additional_origins_input = st.text_input(
+    "Optional Additional In-Scope Origins",
+    value="",
+    placeholder="https://identity.example.test, https://auth.example.test",
+    help="Comma-separated additional origins authorized for testing (e.g. centralized identity provider).",
 )
 
 protected_url = st.text_input(
@@ -2005,10 +2046,28 @@ if st.button(
         st.error(f"Target validation failed: {exc}")
         st.stop()
 
+    additional_origins = [o.strip() for o in additional_origins_input.split(",") if o.strip()]
+
     normalized_login_path = (login_path or "/login").strip()
     if normalized_login_path.lower().startswith(("http://", "https://", "//")):
-        st.error("Login Page Path must be a same-origin path such as /login or /signin.")
-        st.stop()
+        try:
+            parsed_lp = urlparse(normalized_login_path)
+            login_origin = f"{parsed_lp.scheme}://{parsed_lp.netloc}".rstrip("/")
+            scope_val = ScopeValidator(
+                primary_target=target_url,
+                additional_in_scope_origins=additional_origins,
+                policy=policy,
+            )
+            scope_st, _ = scope_val.validate_scope(login_origin)
+            if scope_st != ScopeStatus.IN_SCOPE:
+                st.error(
+                    f"Centralized Login URL origin '{login_origin}' is not authorized. "
+                    f"Please add '{login_origin}' to 'Optional Additional In-Scope Origins' or enter written authorization."
+                )
+                st.stop()
+        except Exception as exc:
+            st.error(f"Invalid Login Page URL: {exc}")
+            st.stop()
 
     if protected_url.strip():
         protected_candidate = protected_url.strip()
@@ -2037,6 +2096,57 @@ if st.button(
         status_box.write("▶ " + display_message)
 
     try:
+        # --------------------------------------------------------------
+        # UNIFIED BLACKBOX SUITE — all pre-login + login-page testcases
+        # --------------------------------------------------------------
+        if assessment_suite.startswith("Unified Blackbox"):
+            progress(f"Running Unified Blackbox Assessment ({len(PRE_LOGIN_TESTS) + len(LOGIN_PAGE_REGISTRY)} test cases)")
+
+            authorized_username = None
+            authorized_password = None
+            if ui_auth_confirmed and ui_auth_username and ui_auth_password:
+                authorized_username = ui_auth_username
+                authorized_password = ui_auth_password
+            else:
+                for item in credentials:
+                    if item.get("known_valid_username"):
+                        candidate_username = str(item.get("username") or "").strip() or None
+                        candidate_password = str(item.get("password") or "")
+                        if candidate_username and candidate_password:
+                            authorized_username = candidate_username
+                            authorized_password = candidate_password
+                            break
+
+            additional_origins = [o.strip() for o in additional_origins_input.split(",") if o.strip()]
+
+            target_inventory, results, overall, run_dir = run_unified_blackbox_suite(
+                target_url=target_url,
+                login_path=normalized_login_path,
+                additional_in_scope_origins=additional_origins,
+                verify_tls=verify_tls,
+                use_browser_discovery=True,
+                credentials=credentials,
+                candidate_usernames=candidate_usernames,
+                authorized_username=authorized_username,
+                authorized_password=authorized_password,
+                protected_url=protected_url.strip() or None,
+                progress=progress,
+            )
+
+            st.session_state.scan_target = target_url
+            st.session_state.scan_results = results
+            st.session_state.target_discovery = target_inventory.as_dict()
+            st.session_state.scan_run_dir = run_dir
+            _finish_scan()
+
+            status_box.update(
+                label=f"All {len(results)} unified blackbox security tests completed.",
+                state="complete",
+                expanded=False,
+            )
+            progress_box.empty()
+            st.rerun()
+
         # --------------------------------------------------------------
         # PRE-LOGIN SUITE — workflow
         # --------------------------------------------------------------
@@ -2102,6 +2212,11 @@ if st.button(
             # tests will return INCOMPLETE/NOT ASSESSED as appropriate.
             progress("No explicitly marked known-valid credential was available; credential-dependent tests will report this condition.")
 
+        scope_validator = ScopeValidator(
+            primary_target=target_url,
+            additional_in_scope_origins=additional_origins,
+            policy=policy,
+        )
         results = run_login_page_suite(
             target_url,
             login_path=normalized_login_path,
@@ -2112,6 +2227,7 @@ if st.button(
             authorized_password=authorized_password,
             protected_url=protected_url.strip() or None,
             progress=progress,
+            scope_validator=scope_validator,
         )
 
         st.session_state.scan_target = target_url

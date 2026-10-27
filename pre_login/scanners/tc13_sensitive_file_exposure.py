@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import secrets
 from dataclasses import dataclass
 from html import unescape
 from typing import Any
@@ -631,17 +632,42 @@ def _analyse_text(
         name in path.lower()
         for name in config_names
     ):
+        is_html = (
+            "<html" in lower
+            or "<!doctype html" in lower
+            or "<head" in lower
+            or "<body" in lower
+            or "<div id=" in lower
+        )
+
+        has_config_syntax = False
+        if not is_html:
+            if path.lower().endswith(".json"):
+                try:
+                    p_json = json.loads(sample)
+                    if isinstance(p_json, dict) and len(p_json) > 0:
+                        has_config_syntax = True
+                except Exception:
+                    pass
+            elif path.lower().endswith(".php"):
+                if PHP_SOURCE_RE.search(sample) or "$config" in sample or "$db" in sample:
+                    has_config_syntax = True
+            elif path.lower().endswith((".yml", ".yaml")):
+                if re.search(r"(?m)^[a-zA-Z0-9_.-]+\s*:\s*[^\s]", sample):
+                    has_config_syntax = True
+            elif "web.config" in path.lower():
+                if "<configuration" in lower or "<system.web" in lower:
+                    has_config_syntax = True
+            elif "application.properties" in path.lower():
+                if JAVA_PROPERTIES_RE.search(sample) or re.search(r"(?m)^[a-zA-Z0-9_.-]+\s*=\s*[^\s]", sample):
+                    has_config_syntax = True
 
         if (
             secret_matches
             or CONNECTION_STRING_RE.search(
                 sample
             )
-            or "=" in sample
-            or (
-                "{" in sample
-                and "}" in sample
-            )
+            or has_config_syntax
         ):
 
             findings.append(
@@ -834,6 +860,29 @@ def scan_sensitive_file_exposure(
 
     completed_count = 0
     failed_count = 0
+
+    # ------------------------------------------------------------------------
+    # Baseline soft-404 check
+    # ------------------------------------------------------------------------
+    baseline_soft_404_body: bytes = b""
+    baseline_soft_404_len: int = -1
+    baseline_soft_404_title: str = ""
+    try:
+        canary_target = absolute(base, f"/_soft_404_baseline_check_{secrets.token_hex(6)}")
+        baseline_resp = request(
+            canary_target,
+            method="GET",
+            timeout=timeout,
+            verify_tls=verify_tls,
+            allow_redirects=False,
+            max_body=max_file_bytes,
+        )
+        if baseline_resp.status_code == 200:
+            baseline_soft_404_body = getattr(baseline_resp, "content", b"") or b""
+            baseline_soft_404_len = len(baseline_soft_404_body)
+            baseline_soft_404_title = _extract_title(baseline_soft_404_body.decode("utf-8", errors="replace"))
+    except Exception:
+        pass
 
     # ========================================================================
     # Probe each resource
@@ -1233,26 +1282,31 @@ def scan_sensitive_file_exposure(
         ]
 
         # ====================================================================
-        # Generic application fallback protection
+        # Generic application fallback / soft-404 / WAF block protection
         # ====================================================================
 
-        if (
-            entry.get(
-                "generic_application_html",
-                False,
+        is_waf_block = (
+            entry.get("title", "").strip().lower() in {"request rejected", "access denied", "blocked"}
+            or "the requested url was rejected" in text.lower()
+        )
+        is_soft_404 = (
+            baseline_soft_404_len > 0
+            and len(body_bytes) == baseline_soft_404_len
+            and (not baseline_soft_404_title or entry.get("title") == baseline_soft_404_title)
+        )
+
+        if is_waf_block or is_soft_404 or entry.get("generic_application_html", False):
+            # Only confirmed credentials, private keys, or connection strings override fallback
+            has_confirmed_secret = any(
+                f.category in {"credential_or_secret", "private_key", "connection_string"}
+                for f in findings
             )
-            and not findings
-        ):
-
-            entry[
-                "likely_application_fallback"
-            ] = True
-
-            details["tested"].append(
-                entry
-            )
-
-            continue
+            if not has_confirmed_secret:
+                entry["likely_application_fallback"] = True
+                if is_waf_block:
+                    entry["waf_blocked"] = True
+                details["tested"].append(entry)
+                continue
 
         # ====================================================================
         # High-confidence exposure

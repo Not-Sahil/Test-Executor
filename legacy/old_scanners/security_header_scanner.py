@@ -14,7 +14,7 @@ IDEAL_HEADERS = {
         "default-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
 
     "Strict-Transport-Security":
-        "max-age=63072000; includeSubDomains; preload",
+        "max-age=31536000; includeSubDomains; preload",
 
     "X-Content-Type-Options":
         "nosniff",
@@ -84,9 +84,9 @@ def check_hsts(value):
     else:
         max_age_value = int(max_age.group(1))
 
-        # 63072000 = 2 years
-        if max_age_value < 63072000:
-            problems.append("max-age is less than 63072000")
+        # 31536000 = 1 year
+        if max_age_value < 31536000:
+            problems.append("max-age is less than 31536000")
 
     # Check includeSubDomains
     if "includesubdomains" not in value_lower:

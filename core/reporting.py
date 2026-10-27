@@ -145,19 +145,51 @@ def build_compiled_payload(
     overall: str,
     timestamp: datetime,
     run_dir: Path,
+    target_discovery: dict | None = None,
+    execution_mode: str = "blackbox",
 ) -> dict:
     result_list = list(results)
-    return _sanitize_value({
+
+    pre_login_keys = set(TEST_FILE_SLUGS.keys())
+    pre_login_total = sum(1 for r in result_list if r.key in pre_login_keys)
+    login_page_total = len(result_list) - pre_login_total
+
+    safe_cnt = sum(1 for r in result_list if r.status == "SAFE")
+    unsafe_cnt = sum(1 for r in result_list if r.status == "UNSAFE")
+    review_cnt = sum(1 for r in result_list if r.status == "REVIEW REQUIRED")
+    skipped_cnt = sum(1 for r in result_list if r.status in ("SKIPPED", "NOT APPLICABLE", "NOT ASSESSED"))
+    incomplete_cnt = sum(1 for r in result_list if r.status in ("INCOMPLETE", "ERROR", "UNKNOWN"))
+    executed_cnt = len(result_list) - skipped_cnt
+
+    summary = {
+        "total_testcases": len(result_list),
+        "pre_login_total": pre_login_total,
+        "login_page_total": login_page_total,
+        "executed": executed_cnt,
+        "safe": safe_cnt,
+        "unsafe": unsafe_cnt,
+        "review_required": review_cnt,
+        "incomplete": incomplete_cnt,
+        "skipped": skipped_cnt,
+    }
+
+    payload = {
         "schema_version": 2,
         "application": "Test Executor",
+        "execution_mode": execution_mode,
         "target": _sanitized_target(target),
         "domain": domain_from_target(target),
         "timestamp": timestamp.isoformat(timespec="seconds"),
         "overall_status": overall,
         "run_folder": str(run_dir),
         "payload_manifest_sha256": _payload_manifest_hash(),
+        "execution_summary": summary,
         "tests": [result.as_dict() for result in result_list],
-    })
+    }
+    if target_discovery:
+        payload["target_discovery"] = target_discovery
+
+    return _sanitize_value(payload)
 
 
 def _status_class(status: str) -> str:
@@ -179,6 +211,45 @@ def render_compiled_html(payload: dict) -> str:
     timestamp = html.escape(str(payload.get("timestamp", "")))
     overall = html.escape(str(payload.get("overall_status", "")))
     overall_class = _status_class(str(payload.get("overall_status", "")))
+    exec_mode = html.escape(str(payload.get("execution_mode", "blackbox")).upper())
+
+    target_disc = payload.get("target_discovery") or {}
+    disc_html = ""
+    if target_disc:
+        app_org = html.escape(str(target_disc.get("application_origin", "")))
+        login_org = html.escape(str(target_disc.get("login_origin") or "N/A"))
+        idp_org = html.escape(str(target_disc.get("identity_provider_origin") or "None"))
+        auth_info = target_disc.get("authentication_flow") or {}
+        proto_hint = html.escape(str(auth_info.get("protocol_hint", "N/A")))
+        confidence = html.escape(str(auth_info.get("confidence", "low")))
+        scope_info = target_disc.get("scope") or {}
+        scope_str = ", ".join(f"{k}: {v}" for k, v in scope_info.items())
+
+        disc_html = f"""
+  <div style="background: #eef2f7; padding: 12px 16px; border-radius: 6px; margin: 16px 0;">
+    <h3>Target Discovery & Authentication Flow</h3>
+    <p>
+      <b>Application Origin:</b> {app_org}<br>
+      <b>Discovered Login Origin:</b> {login_org}<br>
+      <b>Identity Provider:</b> {idp_org}<br>
+      <b>Authentication Protocol Hint:</b> {proto_hint} (Confidence: {confidence})<br>
+      <b>Scope Validation:</b> {html.escape(scope_str)}
+    </p>
+  </div>
+"""
+
+    summary_info = payload.get("execution_summary") or {}
+    summary_html = ""
+    if summary_info:
+        summary_html = f"""
+  <p><b>Summary:</b> Total: {summary_info.get('total_testcases', 0)} | Executed: {summary_info.get('executed', 0)} | 
+     <span class='safe'>SAFE: {summary_info.get('safe', 0)}</span> | 
+     <span class='unsafe'>UNSAFE: {summary_info.get('unsafe', 0)}</span> | 
+     <span class='review'>REVIEW: {summary_info.get('review_required', 0)}</span> | 
+     <span class='incomplete'>INCOMPLETE: {summary_info.get('incomplete', 0)}</span> | 
+     <span class='skipped'>SKIPPED: {summary_info.get('skipped', 0)}</span>
+  </p>
+"""
 
     rows = []
     sections = []
@@ -230,7 +301,7 @@ def render_compiled_html(payload: dict) -> str:
   <title>Test Executor report — {domain}</title>
   <style>
     body {{ font-family: Arial, sans-serif; margin: 24px; color: #1a1a1a; }}
-    h1, h2 {{ margin-bottom: 8px; }}
+    h1, h2, h3 {{ margin-bottom: 8px; }}
     table {{ border-collapse: collapse; width: 100%; margin: 16px 0; }}
     th, td {{ border: 1px solid #ccc; padding: 8px; text-align: left; vertical-align: top; }}
     th {{ background: #f3f3f3; }}
@@ -244,9 +315,11 @@ def render_compiled_html(payload: dict) -> str:
   </style>
 </head>
 <body>
-  <h1>Test Executor</h1>
+  <h1>Test Executor [{exec_mode}]</h1>
   <div class="banner">OVERALL STATUS: <span class="{overall_class}">{overall}</span></div>
   <p>Target: {target}<br>Domain: {domain}<br>Timestamp: {timestamp}</p>
+  {disc_html}
+  {summary_html}
   <h2>Test summary</h2>
   <table>
     <thead>
@@ -269,11 +342,21 @@ def save_run_output(
     results: list[ScanResult],
     overall: str,
     timestamp: datetime | None = None,
+    target_discovery: dict | None = None,
+    execution_mode: str = "blackbox",
 ) -> Path:
     """Write one JSON per test result, plus compiled.json and compiled.html."""
     now = timestamp or datetime.now()
     run_dir = create_run_directory(target, timestamp=now)
-    compiled = build_compiled_payload(target, results, overall, now, run_dir)
+    compiled = build_compiled_payload(
+        target,
+        results,
+        overall,
+        now,
+        run_dir,
+        target_discovery=target_discovery,
+        execution_mode=execution_mode,
+    )
 
     for index, result in enumerate(results, start=1):
         path = run_dir / _test_filename(result, index)
@@ -291,3 +374,4 @@ def save_run_output(
         encoding="utf-8",
     )
     return run_dir
+

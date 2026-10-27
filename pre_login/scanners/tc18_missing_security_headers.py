@@ -14,7 +14,7 @@ IDEAL_HEADERS = {
         "default-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
 
     "Strict-Transport-Security":
-        "max-age=63072000; includeSubDomains; preload",
+        "max-age=31536000; includeSubDomains; preload",
 
     "X-Content-Type-Options":
         "nosniff",
@@ -80,8 +80,6 @@ def check_hsts(value):
         }
 
     hardening = []
-    if max_age_value < 63072000:
-        hardening.append("max-age is below the 2-year recommended hardening target")
     if "includesubdomains" not in value_lower:
         hardening.append("includeSubDomains not present")
     if "preload" not in value_lower:
